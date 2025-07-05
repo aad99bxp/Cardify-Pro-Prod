@@ -164,7 +164,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
 
   return (
     <Card className="w-full max-w-[calc(100vw-4rem)] md:max-w-md lg:max-w-lg shadow-lg">
-      <CardContent className="p-4">
+      <CardContent className="p-0">
         <div
           ref={containerRef}
           className="relative bg-muted-foreground/20 overflow-hidden"
