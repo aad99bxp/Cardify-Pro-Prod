@@ -37,7 +37,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
   
   if (!data) return <div ref={ref} style={{ position: 'absolute', left: '-9999px' }} />;
 
-  const fontStyle = { fontFamily: "'Cardo', serif", fontWeight: 'bold' };
+  const fontStyle = { fontFamily: "'Cardo', serif" };
 
   return (
     <div
@@ -79,7 +79,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 const frontLayout = layout as CardLayout;
                 switch (key as keyof CardLayout) {
                     case 'studentPhoto':
-                        content = <img src={convertDriveToLh3(data.studentPhoto)} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+                        content = <img src={convertDriveToLh3(data.studentPhoto)} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }} />;
                         break;
                     case 'name':
                         content = <strong style={{...fontStyle, fontSize: `${elementLayout.fontSize}px` }}>{data.name}</strong>;
@@ -87,6 +87,18 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                     case 'class':
                          content = <p style={{...fontStyle, fontSize: `${elementLayout.fontSize}px`, backgroundColor: '#f5d85e', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}><strong>Class:</strong> {data.class}</p>
                          break;
+                    case 'dob':
+                        content = <p style={{...fontStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>D.O.B: </strong>{data.dob}</p>;
+                        break;
+                    case 'fatherName':
+                        content = <p style={{...fontStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>Father's Name: </strong>{data.fatherName}</p>;
+                        break;
+                    case 'contact':
+                        content = <p style={{...fontStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>Contact: </strong>{data.contact}</p>;
+                        break;
+                    case 'address':
+                        content = <p style={{...fontStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>Address: </strong>{data.address}</p>;
+                        break;
                     default:
                         content = <span style={{...fontStyle, fontSize: `${elementLayout.fontSize}px`, textAlign:'left', width: '100%' }}>{data[key as keyof CardData]}</span>
                         break;
@@ -95,10 +107,10 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 const backLayout = layout as BackCardLayout;
                 switch (key as keyof BackCardLayout) {
                     case 'fatherPhoto':
-                        content = <img src={convertDriveToLh3(data.fatherphoto)} alt="Father" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+                        content = <img src={convertDriveToLh3(data.fatherphoto)} alt="Father" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }} />;
                         break;
                     case 'motherPhoto':
-                        content = <img src={convertDriveToLh3(data.motherphoto)} alt="Mother" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+                        content = <img src={convertDriveToLh3(data.motherphoto)} alt="Mother" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }} />;
                         break;
                     case 'qrCode':
                         content = qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" style={{ width: '100%', height: '100%' }} /> : null;
