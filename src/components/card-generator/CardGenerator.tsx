@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from 'react';
+import { flushSync } from 'react-dom';
 import Papa from 'papaparse';
 import QRCode from 'qrcode';
 import JSZip from 'jszip';
@@ -124,27 +125,39 @@ export function CardGenerator() {
     const imageOptions = {
       width: 637,
       height: 1016,
-      pixelRatio: 1,
+      pixelRatio: 2, // Increase for better quality
       fontEmbedCSS: fontCSS,
-      fetchRequestInit: { mode: 'cors' as RequestMode, cache: 'no-cache' as RequestCache }
+      fetchRequestInit: { mode: 'cors' as RequestMode, cache: 'default' as RequestCache }
     };
 
     for (let i = 0; i < csvData.length; i++) {
       const row = csvData[i];
       const qrCodeUrl = await QRCode.toDataURL(row.link || 'N/A');
 
-      await new Promise<void>((resolve) => {
+      flushSync(() => {
         setFirstRowData({ ...row, qrCode: qrCodeUrl });
-        setTimeout(resolve, 100);
       });
 
-      const [frontDataUrl, backDataUrl] = await Promise.all([
-        toPng(frontRendererRef.current!, imageOptions),
-        toPng(backRendererRef.current!, imageOptions),
-      ]);
+      if (!frontRendererRef.current || !backRendererRef.current) {
+        toast({ variant: "destructive", title: "Render Error", description: "Could not find card elements to render." });
+        setIsProcessing(false);
+        return;
+      }
+      
+      try {
+        const [frontDataUrl, backDataUrl] = await Promise.all([
+          toPng(frontRendererRef.current, imageOptions),
+          toPng(backRendererRef.current, imageOptions),
+        ]);
 
-      frontZip.file(`${i + 1}_${row.name}_front.png`, frontDataUrl.split(',')[1], { base64: true });
-      backZip.file(`${i + 1}_${row.name}_back.png`, backDataUrl.split(',')[1], { base64: true });
+        frontZip.file(`${i + 1}_${row.name}_front.png`, frontDataUrl.split(',')[1], { base64: true });
+        backZip.file(`${i + 1}_${row.name}_back.png`, backDataUrl.split(',')[1], { base64: true });
+      } catch (error) {
+        console.error("Failed to generate card image", error);
+        toast({ variant: "destructive", title: "Image Generation Failed", description: "Could not generate card image. See console for details." });
+        setIsProcessing(false);
+        return;
+      }
 
       setProgress(((i + 1) / csvData.length) * 100);
     }
@@ -197,8 +210,10 @@ export function CardGenerator() {
             </div>
         )}
       </main>
-      <IdCardRenderer ref={frontRendererRef} cardType="front" bg={frontBg} layout={layout.front} data={firstRowData} />
-      <IdCardRenderer ref={backRendererRef} cardType="back" bg={backBg} layout={layout.back} data={firstRowData} />
+      <div style={{ position: 'absolute', top: 0, left: 0, zIndex: -10, opacity: 0, pointerEvents: 'none', width: 0, height: 0, overflow: 'hidden' }}>
+        <IdCardRenderer ref={frontRendererRef} cardType="front" bg={frontBg} layout={layout.front} data={firstRowData} />
+        <IdCardRenderer ref={backRendererRef} cardType="back" bg={backBg} layout={layout.back} data={firstRowData} />
+      </div>
     </div>
   );
 }

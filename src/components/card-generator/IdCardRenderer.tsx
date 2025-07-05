@@ -36,7 +36,9 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
     }
   }, [data]);
   
-  if (!data) return <div ref={ref} style={{ position: 'absolute', left: '-9999px' }} />;
+  if (!data || !bg) {
+    return <div ref={ref} />;
+  }
 
   const headlineStyle = { fontFamily: "'Poppins', sans-serif" };
   const bodyStyle = { fontFamily: "'PT Sans', sans-serif" };
@@ -45,8 +47,6 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
     <div
       ref={ref}
       style={{
-        position: 'absolute',
-        left: '-9999px',
         width: '637px',
         height: '1016px',
         fontFamily: "'PT Sans', sans-serif",
