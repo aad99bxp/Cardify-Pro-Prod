@@ -85,28 +85,48 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                         content = <img src={convertDriveToLh3(data.studentPhoto)} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
                         break;
                     case 'name':
-                        content = <strong style={{...headlineStyle, fontSize: `${elementLayout.fontSize}px` }}>{data.name}</strong>;
+                        content = <strong style={{...headlineStyle, fontSize: `${elementLayout.fontSize}px` }}>{data.name || '{name}'}</strong>;
                         break;
                     case 'class':
                          baseStyle.justifyContent = 'flex-start';
-                         content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, backgroundColor: '#f5d85e', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}><strong>Class:</strong> {data.class}</p>
+                         content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, backgroundColor: '#f5d85e', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}><strong>Class:</strong> {data.class || '{class}'}</p>
                          break;
                     case 'dob':
                         baseStyle.justifyContent = 'flex-start';
-                        content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>D.O.B: </strong>{data.dob}</p>;
+                        content = (
+                            <div style={{ display: 'flex', width: '100%', fontSize: `${elementLayout.fontSize}px`, ...bodyStyle }}>
+                                <strong style={{ width: '45%', textAlign: 'right', paddingRight: '8px' }}>D.O.B:</strong>
+                                <span style={{ width: '55%', textAlign: 'left' }}>{data.dob || '{dob}'}</span>
+                            </div>
+                        );
                         break;
                     case 'fatherName':
                         baseStyle.justifyContent = 'flex-start';
-                        content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>Father's Name: </strong>{data.fatherName}</p>;
+                        content = (
+                            <div style={{ display: 'flex', width: '100%', fontSize: `${elementLayout.fontSize}px`, ...bodyStyle }}>
+                                <strong style={{ width: '45%', textAlign: 'right', paddingRight: '8px' }}>Father's Name:</strong>
+                                <span style={{ width: '55%', textAlign: 'left' }}>{data.fatherName || '{fatherName}'}</span>
+                            </div>
+                        );
                         break;
                     case 'contact':
                         baseStyle.justifyContent = 'flex-start';
-                        content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>Contact: </strong>{data.contact}</p>;
+                        content = (
+                            <div style={{ display: 'flex', width: '100%', fontSize: `${elementLayout.fontSize}px`, ...bodyStyle }}>
+                                <strong style={{ width: '45%', textAlign: 'right', paddingRight: '8px' }}>Contact:</strong>
+                                <span style={{ width: '55%', textAlign: 'left' }}>{data.contact || '{contact}'}</span>
+                            </div>
+                        );
                         break;
                     case 'address':
                         baseStyle.justifyContent = 'flex-start';
                         baseStyle.alignItems = 'flex-start';
-                        content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>Address: </strong>{data.address}</p>;
+                        content = (
+                            <div style={{ display: 'flex', width: '100%', fontSize: `${elementLayout.fontSize}px`, ...bodyStyle }}>
+                                <strong style={{ width: '45%', textAlign: 'right', paddingRight: '8px', flexShrink: 0 }}>Address:</strong>
+                                <span style={{ width: '55%', textAlign: 'left' }}>{data.address || '{address}'}</span>
+                            </div>
+                        );
                         break;
                     default:
                         content = <span style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, textAlign:'left', width: '100%' }}>{data[key as keyof CardData]}</span>
@@ -125,7 +145,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                         content = qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" style={{ width: '100%', height: '100%' }} /> : null;
                         break;
                     case 'username':
-                        content = <p style={{ ...bodyStyle, fontSize: `${elementLayout.fontSize}px` }}>{data.username}</p>;
+                        content = <p style={{ ...bodyStyle, fontSize: `${elementLayout.fontSize}px` }}>{data.username || '{username}'}</p>;
                         break;
                 }
             }

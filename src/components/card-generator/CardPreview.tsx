@@ -66,16 +66,36 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
                  content = <div className="text-black w-full h-full flex items-center justify-start"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`, backgroundColor: '#f5d85e', padding: `${2*scale}px ${4*scale}px`, borderRadius: `${4*scale}px`, display: 'inline-block' }}><strong>Class:</strong> {frontData?.class || '{class}'}</p></div>;
                  break;
             case 'dob':
-                content = <div className="text-black w-full h-full flex items-center justify-start text-left"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}><strong>D.O.B: </strong>{frontData?.dob || '{dob}'}</p></div>;
+                content = (
+                    <div className="text-black w-full h-full flex items-center" style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}>
+                        <strong style={{ width: '45%', textAlign: 'right', paddingRight: `${8 * scale}px` }}>D.O.B:</strong>
+                        <span style={{ width: '55%', textAlign: 'left' }}>{frontData?.dob || '{dob}'}</span>
+                    </div>
+                );
                 break;
             case 'fatherName':
-                content = <div className="text-black w-full h-full flex items-center justify-start text-left"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}><strong>Father's Name: </strong>{frontData?.fatherName || '{fatherName}'}</p></div>;
+                content = (
+                    <div className="text-black w-full h-full flex items-center" style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}>
+                        <strong style={{ width: '45%', textAlign: 'right', paddingRight: `${8 * scale}px` }}>Father's Name:</strong>
+                        <span style={{ width: '55%', textAlign: 'left' }}>{frontData?.fatherName || '{fatherName}'}</span>
+                    </div>
+                );
                 break;
             case 'contact':
-                content = <div className="text-black w-full h-full flex items-center justify-start text-left"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}><strong>Contact: </strong>{frontData?.contact || '{contact}'}</p></div>;
+                content = (
+                    <div className="text-black w-full h-full flex items-center" style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}>
+                        <strong style={{ width: '45%', textAlign: 'right', paddingRight: `${8 * scale}px` }}>Contact:</strong>
+                        <span style={{ width: '55%', textAlign: 'left' }}>{frontData?.contact || '{contact}'}</span>
+                    </div>
+                );
                 break;
             case 'address':
-                content = <div className="text-black w-full h-full flex items-center justify-start text-left"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}><strong>Address: </strong>{frontData?.address || '{address}'}</p></div>;
+                content = (
+                    <div className="text-black w-full h-full flex items-start" style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}>
+                        <strong style={{ width: '45%', textAlign: 'right', paddingRight: `${8 * scale}px`, flexShrink: 0 }}>Address:</strong>
+                        <span style={{ width: '55%', textAlign: 'left' }}>{frontData?.address || '{address}'}</span>
+                    </div>
+                );
                 break;
             default:
                 content = <span style={{fontSize: `${elementLayout.fontSize! * scale}px`}}>{frontData?.[key as keyof CardData] || `{${key}}`}</span>;
