@@ -2,7 +2,7 @@
 "use client";
 
 import React, { forwardRef, useEffect, useState } from 'react';
-import type { CardData, CardLayout, BackCardLayout, LayoutKey, BackLayoutKey } from '@/lib/card-types';
+import type { CardData, CardLayout, BackCardLayout, LayoutKey, BackLayoutKey, FontLayout } from '@/lib/card-types';
 import QRCode from 'qrcode';
 
 interface IdCardRendererProps {
@@ -30,6 +30,9 @@ const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
   address: 'Address:',
 };
 
+const detailFields: (keyof CardLayout)[] = ['class', 'dob', 'fatherName', 'contact', 'address'];
+const positionableElementKeys = ['studentPhoto', 'name', 'detailsGroup', 'fatherPhoto', 'motherPhoto', 'qrCode', 'username'];
+
 
 const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
   ({ cardType, bg, layout, data }, ref) => {
@@ -49,8 +52,47 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
     return <div ref={ref} />;
   }
 
-  const headlineStyle = { fontFamily: "'Poppins', sans-serif" };
-  const bodyStyle = { fontFamily: "'PT Sans', sans-serif" };
+  const headlineStyle: React.CSSProperties = { fontFamily: "'Poppins', sans-serif" };
+  const bodyStyle: React.CSSProperties = { fontFamily: "'PT Sans', sans-serif" };
+
+  const renderDetailsGroup = () => {
+    const detailsLayout = layout as CardLayout;
+    let yOffset = 0;
+
+    return detailFields.map(key => {
+      const fontLayout = detailsLayout[key as keyof CardLayout] as FontLayout & { height?: number };
+      if (!fontLayout.visible) return null;
+
+      const fieldHeight = (key === 'address' ? fontLayout.height! : 40);
+      const value = data[key as keyof CardData] || `{${key}}`;
+
+      const element = (
+        <div key={key} style={{
+          position: 'absolute',
+          top: `${yOffset}px`,
+          width: '100%',
+          height: `${fieldHeight}px`,
+          display: 'flex',
+          alignItems: 'flex-start',
+          ...bodyStyle
+        }}>
+          <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px` }}>
+            {fieldLabels[key as keyof typeof fieldLabels]}
+          </div>
+          <div style={{ width: '50%', textAlign: 'left', fontSize: `${fontLayout.valueFontSize}px` }}>
+            {value}
+          </div>
+        </div>
+      );
+
+      yOffset += fieldHeight;
+      return element;
+    });
+  };
+
+  const filteredLayout = Object.fromEntries(
+    Object.entries(layout).filter(([key]) => positionableElementKeys.includes(key))
+  );
 
   return (
     <div
@@ -69,7 +111,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
             backgroundSize: '100% 100%',
             position: 'relative',
         }}>
-        {Object.entries(layout).map(([key, elementLayout]) => {
+        {Object.entries(filteredLayout).map(([key, elementLayout]: [string, any]) => {
             if(!elementLayout.visible) return null;
 
             const baseStyle: React.CSSProperties = {
@@ -85,27 +127,20 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
             };
 
             let content;
-            if (elementLayout.valueFontSize) {
-                const label = fieldLabels[key as keyof typeof fieldLabels];
-                 if (key === 'name') {
-                    content = <strong style={{...headlineStyle, fontSize: `${elementLayout.valueFontSize}px`, textAlign: 'center', width: '100%' }}>{data.name || '{name}'}</strong>;
-                } else if (key === 'username') {
-                    content = <p style={{ ...bodyStyle, fontSize: `${elementLayout.valueFontSize}px`, textAlign: 'center', width: '100%' }}>{data.username || '{username}'}</p>;
-                } else if (label) {
-                    const value = data[key as keyof CardData] || `{${key}}`;
-                    baseStyle.alignItems = 'flex-start';
-                    content = (
-                        <div style={{ display: 'flex', width: '100%', ...bodyStyle }}>
-                            <div style={{ width: '45%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${elementLayout.labelFontSize}px` }}>
-                                {label}
-                            </div>
-                            <div style={{ width: '55%', textAlign: 'left', fontSize: `${elementLayout.valueFontSize}px` }}>
-                                {value}
-                            </div>
-                        </div>
-                    );
-                }
-            } else { // Image and QR elements
+
+            if (key === 'detailsGroup') {
+              baseStyle.display = 'block';
+              baseStyle.overflow = 'hidden';
+              content = (
+                <div style={{ position: 'relative', width: '100%', height: '100%'}}>
+                  {renderDetailsGroup()}
+                </div>
+              );
+            } else if (key === 'name') {
+                content = <strong style={{...headlineStyle, fontSize: `${elementLayout.valueFontSize}px`, textAlign: 'center', width: '100%' }}>{data.name || '{name}'}</strong>;
+            } else if (key === 'username') {
+                content = <p style={{ ...bodyStyle, fontSize: `${elementLayout.valueFontSize}px`, textAlign: 'center', width: '100%' }}>{data.username || '{username}'}</p>;
+            } else { 
                  switch (key as keyof (CardLayout & BackCardLayout)) {
                     case 'studentPhoto':
                         content = <img src={convertDriveToLh3(data.studentPhoto)} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;

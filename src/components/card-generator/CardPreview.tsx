@@ -4,7 +4,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { EditableElement } from './EditableElement';
 import { CardContent, Card } from '@/components/ui/card';
-import type { CardLayout, BackCardLayout, ElementLayout, LayoutKey, BackLayoutKey, CardData } from '@/lib/card-types';
+import type { CardLayout, BackCardLayout, ElementLayout, LayoutKey, BackLayoutKey, CardData, FontLayout } from '@/lib/card-types';
 import { ImageIcon } from 'lucide-react';
 import QRCode from 'qrcode';
 
@@ -29,6 +29,9 @@ const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
   address: 'Address:',
 };
 
+const detailFields: (keyof CardLayout)[] = ['class', 'dob', 'fatherName', 'contact', 'address'];
+const positionableElementKeys = ['studentPhoto', 'name', 'detailsGroup', 'fatherPhoto', 'motherPhoto', 'qrCode', 'username'];
+
 export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: CardPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
@@ -52,58 +55,87 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
     }
   }, [data, cardType]);
 
-  const renderElement = (key: LayoutKey | BackLayoutKey, elementLayout: ElementLayout) => {
+  const renderDetailsGroup = (scale: number) => {
+    const detailsLayout = layout as CardLayout;
+    let yOffset = 0;
+
+    return detailFields.map(key => {
+      const fontLayout = detailsLayout[key as keyof CardLayout] as FontLayout & { height?: number };
+      if (!fontLayout.visible) return null;
+
+      const fieldHeight = (key === 'address' ? fontLayout.height! : 40) * scale;
+      const value = data?.[key] || `{${key}}`;
+
+      const element = (
+        <div
+          key={key}
+          className="w-full flex"
+          style={{
+            position: 'absolute',
+            top: `${yOffset}px`,
+            height: `${fieldHeight}px`,
+            fontFamily: "'PT Sans', sans-serif",
+            color: 'black',
+            alignItems: 'flex-start'
+          }}
+        >
+          <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px` }}>
+            {fieldLabels[key as keyof typeof fieldLabels]}
+          </div>
+          <div className="w-1/2 text-left" style={{ fontSize: `${fontLayout.valueFontSize * scale}px` }}>
+            {value}
+          </div>
+        </div>
+      );
+      yOffset += fieldHeight;
+      return element;
+    });
+  };
+
+  const renderElement = (key: LayoutKey | BackLayoutKey, elementLayout: any) => {
     if (!elementLayout.visible) return null;
 
     let content: React.ReactNode;
     const scale = PREVIEW_WIDTH / 637;
     const headlineStyle = { fontFamily: "'Poppins', sans-serif" };
-    const bodyStyle = { fontFamily: "'PT Sans', sans-serif" };
+    
+    const isEditable = positionableElementKeys.includes(key as string);
 
-    const frontData = data as CardData;
-    const isEditable = !elementLayout.valueFontSize;
-
-    if (elementLayout.valueFontSize) {
-      const label = fieldLabels[key];
-      if (key === 'name') {
-        content = (
-          <div className="text-black w-full h-full flex items-center justify-center" style={{ ...headlineStyle, fontSize: `${elementLayout.valueFontSize * scale}px` }}>
-            <strong>{frontData?.name || '{name}'}</strong>
-          </div>
-        );
-      } else if (key === 'username') {
-        content = (
-          <div className="text-black w-full h-full flex items-center justify-center" style={{ ...bodyStyle, fontSize: `${elementLayout.valueFontSize * scale}px` }}>
-            {frontData?.username || '{username}'}
-          </div>
-        );
-      } else if (label) {
-        const value = frontData?.[key as keyof CardData] || `{${key}}`;
-        content = (
-          <div className="flex w-full h-full items-start" style={bodyStyle}>
-            <div className="w-[45%] text-right pr-2 font-bold" style={{ fontSize: `${elementLayout.labelFontSize! * scale}px` }}>
-              {label}
-            </div>
-            <div className="w-[55%] text-left" style={{ fontSize: `${elementLayout.valueFontSize * scale}px` }}>
-              {value}
-            </div>
-          </div>
-        );
-      }
+    if (key === 'detailsGroup') {
+      content = (
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+          {renderDetailsGroup(scale)}
+        </div>
+      );
+    } else if (key === 'name') {
+      content = (
+        <div className="text-black w-full h-full flex items-center justify-center" style={{ ...headlineStyle, fontSize: `${elementLayout.valueFontSize * scale}px` }}>
+          <strong>{data?.name || '{name}'}</strong>
+        </div>
+      );
+    } else if (key === 'username') {
+      const bodyStyle = { fontFamily: "'PT Sans', sans-serif" };
+      content = (
+        <div className="text-black w-full h-full flex items-center justify-center" style={{ ...bodyStyle, fontSize: `${elementLayout.valueFontSize * scale}px` }}>
+          {data?.username || '{username}'}
+        </div>
+      );
     } else {
       switch (key) {
         case 'studentPhoto':
-          content = <img src={convertDriveToLh3(frontData?.studentPhoto)} alt="Student" className="w-full h-full object-cover rounded-2xl" />;
+          content = <img src={convertDriveToLh3(data?.studentPhoto)} alt="Student" className="w-full h-full object-cover rounded-2xl" />;
           break;
         case 'fatherPhoto':
-          content = <img src={convertDriveToLh3(frontData?.fatherphoto)} alt="Father" className="w-full h-full object-cover rounded-2xl" />;
+          content = <img src={convertDriveToLh3(data?.fatherphoto)} alt="Father" className="w-full h-full object-cover rounded-2xl" />;
           break;
         case 'motherPhoto':
-          content = <img src={convertDriveToLh3(frontData?.motherphoto)} alt="Mother" className="w-full h-full object-cover rounded-2xl" />;
+          content = <img src={convertDriveToLh3(data?.motherphoto)} alt="Mother" className="w-full h-full object-cover rounded-2xl" />;
           break;
         case 'qrCode':
           content = qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" /> : null;
           break;
+        default:
+          return null;
       }
     }
     
@@ -122,22 +154,13 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
       );
     }
 
-    return (
-      <div
-        key={key}
-        id={`${id}-${key}`}
-        style={{
-          top: `${elementLayout.y * scale}px`,
-          left: `${elementLayout.x * scale}px`,
-          width: `${elementLayout.width * scale}px`,
-          height: `${elementLayout.height * scale}px`,
-        }}
-        className="absolute flex items-center"
-      >
-        {content}
-      </div>
-    );
+    // Should not be reached for movable elements
+    return null;
   };
+
+  const positionableElements = Object.entries(layout).filter(([key]) =>
+    positionableElementKeys.includes(key)
+  );
 
   return (
     <Card className="w-full max-w-[calc(100vw-4rem)] md:max-w-md lg:max-w-lg shadow-lg">
@@ -153,7 +176,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
           }}
         >
           {bg ? (
-            Object.entries(layout).map(([key, elementLayout]) => renderElement(key as LayoutKey | BackLayoutKey, elementLayout))
+            positionableElements.map(([key, elementLayout]) => renderElement(key as LayoutKey | BackLayoutKey, elementLayout))
           ) : (
             <div className="w-full h-full flex items-center justify-center flex-col text-muted-foreground">
               <ImageIcon className="w-16 h-16" />

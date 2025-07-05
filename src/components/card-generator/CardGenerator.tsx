@@ -18,11 +18,12 @@ const initialLayout: Layout = {
   front: {
     studentPhoto: { x: 194, y: 148, width: 250, height: 250, visible: true },
     name: { x: 20, y: 420, width: 597, height: 60, valueFontSize: 40, visible: true },
-    class: { x: 120, y: 520, width: 400, height: 38, labelFontSize: 24, valueFontSize: 24, visible: true },
-    dob: { x: 120, y: 560, width: 400, height: 38, labelFontSize: 24, valueFontSize: 24, visible: true },
-    fatherName: { x: 120, y: 600, width: 400, height: 38, labelFontSize: 24, valueFontSize: 24, visible: true },
-    contact: { x: 120, y: 640, width: 400, height: 38, labelFontSize: 24, valueFontSize: 24, visible: true },
-    address: { x: 120, y: 680, width: 400, height: 80, labelFontSize: 24, valueFontSize: 24, visible: true },
+    detailsGroup: { x: 120, y: 520, width: 400, height: 280, visible: true },
+    class: { labelFontSize: 24, valueFontSize: 24, visible: true },
+    dob: { labelFontSize: 24, valueFontSize: 24, visible: true },
+    fatherName: { labelFontSize: 24, valueFontSize: 24, visible: true },
+    contact: { labelFontSize: 24, valueFontSize: 24, visible: true },
+    address: { labelFontSize: 24, valueFontSize: 24, visible: true, height: 80 },
   },
   back: {
     fatherPhoto: { x: 34, y: 250, width: 250, height: 250, visible: true },
@@ -211,7 +212,7 @@ export function CardGenerator() {
             </div>
         )}
       </main>
-      <div style={{ position: 'absolute', top: 0, left: 0, zIndex: -10, opacity: 0, pointerEvents: 'none', width: 'auto', height: 'auto' }}>
+      <div style={{ position: 'absolute', top: '-2000px', left: 0, zIndex: -10, opacity: 1, pointerEvents: 'auto', width: 'auto', height: 'auto' }}>
         <IdCardRenderer ref={frontRendererRef} cardType="front" bg={frontBg} layout={layout.front} data={firstRowData} />
         <IdCardRenderer ref={backRendererRef} cardType="back" bg={backBg} layout={layout.back} data={firstRowData} />
       </div>

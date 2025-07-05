@@ -3,26 +3,31 @@ export interface ElementLayout {
   y: number;
   width: number;
   height: number;
-  valueFontSize?: number;
-  labelFontSize?: number;
+  visible: boolean;
+}
+
+export interface FontLayout {
+  valueFontSize: number;
+  labelFontSize: number;
   visible: boolean;
 }
 
 export interface CardLayout {
   studentPhoto: ElementLayout;
-  name: ElementLayout;
-  class: ElementLayout;
-  dob: ElementLayout;
-  fatherName: ElementLayout;
-  contact: ElementLayout;
-  address: ElementLayout;
+  name: ElementLayout & { valueFontSize: number };
+  detailsGroup: ElementLayout;
+  class: FontLayout;
+  dob: FontLayout;
+  fatherName: FontLayout;
+  contact: FontLayout;
+  address: FontLayout & { height: number };
 }
 
 export interface BackCardLayout {
   fatherPhoto: ElementLayout;
   motherPhoto: ElementLayout;
   qrCode: ElementLayout;
-  username: ElementLayout;
+  username: ElementLayout & { valueFontSize: number };
 }
 
 export type Layout = {
