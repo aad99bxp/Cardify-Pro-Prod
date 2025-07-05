@@ -82,7 +82,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 const frontLayout = layout as CardLayout;
                 switch (key as keyof CardLayout) {
                     case 'studentPhoto':
-                        content = <img src={convertDriveToLh3(data.studentPhoto)} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }} />;
+                        content = <img src={convertDriveToLh3(data.studentPhoto)} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
                         break;
                     case 'name':
                         content = <strong style={{...headlineStyle, fontSize: `${elementLayout.fontSize}px` }}>{data.name}</strong>;
@@ -92,15 +92,20 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                          content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, backgroundColor: '#f5d85e', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}><strong>Class:</strong> {data.class}</p>
                          break;
                     case 'dob':
+                        baseStyle.justifyContent = 'flex-start';
                         content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>D.O.B: </strong>{data.dob}</p>;
                         break;
                     case 'fatherName':
+                        baseStyle.justifyContent = 'flex-start';
                         content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>Father's Name: </strong>{data.fatherName}</p>;
                         break;
                     case 'contact':
+                        baseStyle.justifyContent = 'flex-start';
                         content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>Contact: </strong>{data.contact}</p>;
                         break;
                     case 'address':
+                        baseStyle.justifyContent = 'flex-start';
+                        baseStyle.alignItems = 'flex-start';
                         content = <p style={{...bodyStyle, fontSize: `${elementLayout.fontSize}px`, textAlign: 'left', width: '100%'}}><strong>Address: </strong>{data.address}</p>;
                         break;
                     default:
@@ -111,10 +116,10 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 const backLayout = layout as BackCardLayout;
                 switch (key as keyof BackCardLayout) {
                     case 'fatherPhoto':
-                        content = <img src={convertDriveToLh3(data.fatherphoto)} alt="Father" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }} />;
+                        content = <img src={convertDriveToLh3(data.fatherphoto)} alt="Father" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
                         break;
                     case 'motherPhoto':
-                        content = <img src={convertDriveToLh3(data.motherphoto)} alt="Mother" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }} />;
+                        content = <img src={convertDriveToLh3(data.motherphoto)} alt="Mother" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
                         break;
                     case 'qrCode':
                         content = qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" style={{ width: '100%', height: '100%' }} /> : null;

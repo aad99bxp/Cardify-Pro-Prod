@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -47,35 +48,63 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
     if (!elementLayout.visible) return null;
 
     let content: React.ReactNode;
-    let placeholder: string = key.toString();
-    
+    const scale = PREVIEW_WIDTH / 637;
+    const headlineStyle = { fontFamily: "'Poppins', sans-serif" };
+    const bodyStyle = { fontFamily: "'PT Sans', sans-serif" };
+
     const frontData = data as CardData;
-    const backData = data as CardData & { qrCode: string };
 
-    if (cardType === 'front' && 'studentPhoto' in layout && key === 'studentPhoto') {
-        content = <img src={convertDriveToLh3(frontData?.studentPhoto)} alt="Student" className="w-full h-full object-cover" />;
-        placeholder = "Student Photo";
-    } else if (cardType === 'back' && 'fatherPhoto' in layout && key === 'fatherPhoto') {
-        content = <img src={convertDriveToLh3(backData?.fatherphoto)} alt="Father" className="w-full h-full object-cover" />;
-        placeholder = "Father Photo";
-    } else if (cardType === 'back' && 'motherPhoto' in layout && key === 'motherPhoto') {
-        content = <img src={convertDriveToLh3(backData?.motherphoto)} alt="Mother" className="w-full h-full object-cover" />;
-        placeholder = "Mother Photo";
-    } else if (cardType === 'back' && 'qrCode' in layout && key === 'qrCode') {
-        content = qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" className="w-full h-full object-cover" /> : null;
-        placeholder = "QR Code";
-    } else {
-        content = <span style={{fontSize: `${elementLayout.fontSize! * (PREVIEW_WIDTH / 637)}px`}}>{frontData?.[key as keyof CardData] || `{${key}}`}</span>
-        placeholder = `{${key}}`;
+    if (cardType === 'front') {
+        switch (key as keyof CardLayout) {
+            case 'studentPhoto':
+                content = <img src={convertDriveToLh3(frontData?.studentPhoto)} alt="Student" className="w-full h-full object-cover rounded-2xl" />;
+                break;
+            case 'name':
+                content = <div className="text-black w-full h-full flex items-center justify-center"><strong style={{...headlineStyle, fontSize: `${elementLayout.fontSize! * scale}px` }}>{frontData?.name || '{name}'}</strong></div>;
+                break;
+            case 'class':
+                 content = <div className="text-black w-full h-full flex items-center justify-start"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`, backgroundColor: '#f5d85e', padding: `${2*scale}px ${4*scale}px`, borderRadius: `${4*scale}px`, display: 'inline-block' }}><strong>Class:</strong> {frontData?.class || '{class}'}</p></div>;
+                 break;
+            case 'dob':
+                content = <div className="text-black w-full h-full flex items-center justify-start text-left"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}><strong>D.O.B: </strong>{frontData?.dob || '{dob}'}</p></div>;
+                break;
+            case 'fatherName':
+                content = <div className="text-black w-full h-full flex items-center justify-start text-left"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}><strong>Father's Name: </strong>{frontData?.fatherName || '{fatherName}'}</p></div>;
+                break;
+            case 'contact':
+                content = <div className="text-black w-full h-full flex items-center justify-start text-left"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}><strong>Contact: </strong>{frontData?.contact || '{contact}'}</p></div>;
+                break;
+            case 'address':
+                content = <div className="text-black w-full h-full flex items-center justify-start text-left"><p style={{...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px`}}><strong>Address: </strong>{frontData?.address || '{address}'}</p></div>;
+                break;
+            default:
+                content = <span style={{fontSize: `${elementLayout.fontSize! * scale}px`}}>{frontData?.[key as keyof CardData] || `{${key}}`}</span>;
+                break;
+        }
+    } else { // Back card
+        switch (key as keyof BackCardLayout) {
+            case 'fatherPhoto':
+                content = <img src={convertDriveToLh3(frontData?.fatherphoto)} alt="Father" className="w-full h-full object-cover rounded-2xl" />;
+                break;
+            case 'motherPhoto':
+                content = <img src={convertDriveToLh3(frontData?.motherphoto)} alt="Mother" className="w-full h-full object-cover rounded-2xl" />;
+                break;
+            case 'qrCode':
+                content = qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" /> : null;
+                break;
+            case 'username':
+                content = <div className="text-black w-full h-full flex items-center justify-center"><p style={{ ...bodyStyle, fontSize: `${elementLayout.fontSize! * scale}px` }}>{frontData?.username || '{username}'}</p></div>;
+                break;
+        }
     }
-
+    
     return (
       <EditableElement
         key={key}
         id={`${id}-${key}`}
         layout={elementLayout}
         onUpdate={(newLayout) => onLayoutChange(key, newLayout)}
-        scale={PREVIEW_WIDTH / 637}
+        scale={scale}
         containerRef={containerRef}
       >
         {content}
