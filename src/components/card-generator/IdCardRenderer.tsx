@@ -26,7 +26,9 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   useEffect(() => {
-    if (data?.link) {
+    if (data?.qrCode) {
+      setQrCodeUrl(data.qrCode);
+    } else if (data?.link) {
       QRCode.toDataURL(data.link, { width: 300 }).then(setQrCodeUrl);
     } else {
         setQrCodeUrl('');
@@ -117,4 +119,3 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
 IdCardRenderer.displayName = 'IdCardRenderer';
 
 export default IdCardRenderer;
-

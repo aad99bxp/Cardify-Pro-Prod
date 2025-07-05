@@ -34,7 +34,9 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
   };
   
   useEffect(() => {
-    if (data?.link && cardType === 'back') {
+    if (data?.qrCode) {
+      setQrCodeUrl(data.qrCode);
+    } else if (data?.link && cardType === 'back') {
       QRCode.toDataURL(data.link, { width: 300 }).then(setQrCodeUrl);
     } else {
       setQrCodeUrl('');

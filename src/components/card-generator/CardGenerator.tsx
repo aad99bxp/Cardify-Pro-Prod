@@ -61,14 +61,26 @@ export function CardGenerator() {
       Papa.parse<CardData>(e.target.files[0], {
         header: true,
         skipEmptyLines: true,
-        complete: (results) => {
+        complete: async (results) => {
           if (results.errors.length > 0) {
             toast({ variant: "destructive", title: "CSV Parsing Error", description: results.errors.map(e => e.message).join('\n') });
             return;
           }
-          setCsvData(results.data);
-          setFirstRowData(results.data[0] || null);
-          toast({ title: "CSV Loaded", description: `${results.data.length} records found.`});
+          const data = results.data;
+          setCsvData(data);
+          if (data.length > 0) {
+            const firstRow = data[0];
+            try {
+              const qrCode = await QRCode.toDataURL(firstRow.link || 'N/A');
+              setFirstRowData({ ...firstRow, qrCode });
+            } catch (error) {
+              console.error("Failed to generate QR code for preview", error);
+              setFirstRowData(firstRow);
+            }
+          } else {
+            setFirstRowData(null);
+          }
+          toast({ title: "CSV Loaded", description: `${data.length} records found.`});
         },
       });
     }
@@ -103,33 +115,36 @@ export function CardGenerator() {
     const frontZip = new JSZip();
     const backZip = new JSZip();
 
+    const fontUrl = "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=PT+Sans:wght@400;700&family=Cardo:wght@700&display=swap";
+    const fontCSS = await fetch(fontUrl).then(res => res.text()).catch(err => {
+        console.error("Failed to fetch font CSS, generated images may lack correct fonts.", err);
+        return '';
+    });
+
+    const imageOptions = {
+      width: 637,
+      height: 1016,
+      pixelRatio: 1,
+      fontEmbedCSS: fontCSS,
+      fetchRequestInit: { mode: 'cors' as RequestMode, cache: 'no-cache' as RequestCache }
+    };
+
     for (let i = 0; i < csvData.length; i++) {
       const row = csvData[i];
       const qrCodeUrl = await QRCode.toDataURL(row.link || 'N/A');
 
-      const dataUrls = await Promise.all([
-        toPng(frontRendererRef.current!, {
-          width: 637, height: 1016, pixelRatio: 1,
-          fetchRequestInit: { mode: 'cors', cache: 'no-cache' }
-        }),
-        toPng(backRendererRef.current!, {
-          width: 637, height: 1016, pixelRatio: 1,
-          fetchRequestInit: { mode: 'cors', cache: 'no-cache' }
-        }),
+      await new Promise<void>((resolve) => {
+        setFirstRowData({ ...row, qrCode: qrCodeUrl });
+        setTimeout(resolve, 100);
+      });
+
+      const [frontDataUrl, backDataUrl] = await Promise.all([
+        toPng(frontRendererRef.current!, imageOptions),
+        toPng(backRendererRef.current!, imageOptions),
       ]);
 
-      // This is a bit of a trick: we render the data in the hidden renderer,
-      // capture it, then render the next student's data.
-      // We are always one step ahead in rendering vs capturing.
-      // For the last student, we don't need to render anything new.
-      if (i < csvData.length -1) {
-          const nextRow = csvData[i+1];
-          const nextQrCodeUrl = await QRCode.toDataURL(nextRow.link || 'N/A');
-          setFirstRowData({...nextRow, qrCode: nextQrCodeUrl});
-      }
-
-      frontZip.file(`${i + 1}_${row.name}_front.png`, dataUrls[0].split(',')[1], { base64: true });
-      backZip.file(`${i + 1}_${row.name}_back.png`, dataUrls[1].split(',')[1], { base64: true });
+      frontZip.file(`${i + 1}_${row.name}_front.png`, frontDataUrl.split(',')[1], { base64: true });
+      backZip.file(`${i + 1}_${row.name}_back.png`, backDataUrl.split(',')[1], { base64: true });
 
       setProgress(((i + 1) / csvData.length) * 100);
     }
@@ -143,6 +158,12 @@ export function CardGenerator() {
     saveAs(backBlob, 'back_cards.zip');
     
     setIsProcessing(false);
+
+    if (csvData.length > 0) {
+        const firstRow = csvData[0];
+        const qrCode = await QRCode.toDataURL(firstRow.link || 'N/A');
+        setFirstRowData({ ...firstRow, qrCode });
+    }
   };
 
   return (
