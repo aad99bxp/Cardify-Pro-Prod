@@ -36,6 +36,8 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
   useEffect(() => {
     if (data?.link && cardType === 'back') {
       QRCode.toDataURL(data.link, { width: 300 }).then(setQrCodeUrl);
+    } else {
+      setQrCodeUrl('');
     }
   }, [data, cardType]);
 
@@ -58,7 +60,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
         content = <img src={convertDriveToLh3(backData?.motherphoto)} alt="Mother" className="w-full h-full object-cover" />;
         placeholder = "Mother Photo";
     } else if (cardType === 'back' && 'qrCode' in layout && key === 'qrCode') {
-        content = <img src={qrCodeUrl} alt="QR Code" className="w-full h-full object-cover" />;
+        content = qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" className="w-full h-full object-cover" /> : null;
         placeholder = "QR Code";
     } else {
         content = <span style={{fontSize: `${elementLayout.fontSize! * (PREVIEW_WIDTH / 637)}px`}}>{frontData?.[key as keyof CardData] || `{${key}}`}</span>
