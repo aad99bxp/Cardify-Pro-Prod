@@ -3,6 +3,7 @@
 import { CardPreview } from './CardPreview';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { Layout, CardData, ElementLayout, LayoutKey, BackLayoutKey } from '@/lib/card-types';
+import { LayoutControlsPanel } from './LayoutControlsPanel';
 
 interface EditorPanelProps {
   frontBg: string | null;
@@ -21,7 +22,7 @@ export function EditorPanel({ frontBg, backBg, layout, onLayoutChange, data }: E
           <TabsTrigger value="back">Back View</TabsTrigger>
         </TabsList>
         <TabsContent value="front">
-          <div className="mt-4 flex justify-center items-start">
+          <div className="mt-4 flex flex-col md:flex-row gap-8 justify-center items-start">
              <CardPreview
               id="front-preview"
               bg={frontBg}
@@ -30,10 +31,15 @@ export function EditorPanel({ frontBg, backBg, layout, onLayoutChange, data }: E
               data={data}
               cardType="front"
             />
+            <LayoutControlsPanel 
+              cardType="front"
+              layout={layout.front}
+              onLayoutChange={(key, newLayout) => onLayoutChange('front', key as LayoutKey, newLayout)}
+            />
           </div>
         </TabsContent>
         <TabsContent value="back">
-           <div className="mt-4 flex justify-center items-start">
+           <div className="mt-4 flex flex-col md:flex-row gap-8 justify-center items-start">
             <CardPreview
               id="back-preview"
               bg={backBg}
@@ -41,6 +47,11 @@ export function EditorPanel({ frontBg, backBg, layout, onLayoutChange, data }: E
               onLayoutChange={(key, newLayout) => onLayoutChange('back', key as BackLayoutKey, newLayout)}
               data={data}
               cardType="back"
+            />
+             <LayoutControlsPanel 
+              cardType="back"
+              layout={layout.back}
+              onLayoutChange={(key, newLayout) => onLayoutChange('back', key as BackLayoutKey, newLayout)}
             />
           </div>
         </TabsContent>

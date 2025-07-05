@@ -16,21 +16,22 @@ import { Progress } from "@/components/ui/progress"
 
 const initialLayout: Layout = {
   front: {
-    studentPhoto: { x: 194, y: 228, width: 250, height: 250, visible: true },
-    name: { x: 20, y: 500, width: 597, height: 60, fontSize: 40, visible: true },
-    class: { x: 228, y: 565, width: 180, height: 45, fontSize: 30, visible: true },
-    dob: { x: 318, y: 642, width: 200, height: 38, fontSize: 24, visible: true },
-    fatherName: { x: 318, y: 686, width: 300, height: 38, fontSize: 24, visible: true },
-    contact: { x: 318, y: 730, width: 300, height: 38, fontSize: 24, visible: true },
-    address: { x: 318, y: 774, width: 300, height: 80, fontSize: 24, visible: true },
+    studentPhoto: { x: 194, y: 148, width: 250, height: 250, visible: true },
+    name: { x: 20, y: 420, width: 597, height: 60, valueFontSize: 40, visible: true },
+    class: { x: 120, y: 520, width: 400, height: 38, labelFontSize: 24, valueFontSize: 24, visible: true },
+    dob: { x: 120, y: 560, width: 400, height: 38, labelFontSize: 24, valueFontSize: 24, visible: true },
+    fatherName: { x: 120, y: 600, width: 400, height: 38, labelFontSize: 24, valueFontSize: 24, visible: true },
+    contact: { x: 120, y: 640, width: 400, height: 38, labelFontSize: 24, valueFontSize: 24, visible: true },
+    address: { x: 120, y: 680, width: 400, height: 80, labelFontSize: 24, valueFontSize: 24, visible: true },
   },
   back: {
     fatherPhoto: { x: 34, y: 250, width: 250, height: 250, visible: true },
     motherPhoto: { x: 353, y: 250, width: 250, height: 250, visible: true },
     qrCode: { x: 168, y: 570, width: 300, height: 300, visible: true },
-    username: { x: 168, y: 880, width: 300, height: 38, fontSize: 24, visible: true },
+    username: { x: 168, y: 880, width: 300, height: 38, valueFontSize: 24, visible: true },
   },
 };
+
 
 export function CardGenerator() {
   const [frontBg, setFrontBg] = useState<string | null>("https://lh3.googleusercontent.com/d/11rxe63TxPfS5Feu0aKSRxoc1DuaNKj4U=s1600");
@@ -210,7 +211,7 @@ export function CardGenerator() {
             </div>
         )}
       </main>
-      <div style={{ position: 'absolute', top: 0, left: 0, zIndex: -10, opacity: 0, pointerEvents: 'none', width: 0, height: 0, overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, zIndex: -10, opacity: 0, pointerEvents: 'none', width: 'auto', height: 'auto' }}>
         <IdCardRenderer ref={frontRendererRef} cardType="front" bg={frontBg} layout={layout.front} data={firstRowData} />
         <IdCardRenderer ref={backRendererRef} cardType="back" bg={backBg} layout={layout.back} data={firstRowData} />
       </div>

@@ -3,7 +3,8 @@ export interface ElementLayout {
   y: number;
   width: number;
   height: number;
-  fontSize?: number;
+  valueFontSize?: number;
+  labelFontSize?: number;
   visible: boolean;
 }
 
