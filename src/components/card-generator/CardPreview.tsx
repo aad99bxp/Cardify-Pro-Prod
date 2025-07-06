@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -76,7 +75,8 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
             height: `${fieldHeight}px`,
             fontFamily: "'PT Sans', sans-serif",
             color: 'black',
-            alignItems: 'flex-start'
+            alignItems: 'flex-start',
+            ...(key === 'class' && { backgroundColor: '#FEF9C3' })
           }}
         >
           <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px` }}>

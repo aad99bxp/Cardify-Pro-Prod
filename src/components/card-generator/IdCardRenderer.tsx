@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { forwardRef, useEffect, useState } from 'react';
@@ -74,7 +73,8 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
           height: `${fieldHeight}px`,
           display: 'flex',
           alignItems: 'flex-start',
-          ...bodyStyle
+          ...bodyStyle,
+          ...(key === 'class' && { backgroundColor: '#FEF9C3' })
         }}>
           <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px` }}>
             {fieldLabels[key as keyof typeof fieldLabels]}
