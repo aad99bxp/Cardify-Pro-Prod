@@ -143,16 +143,16 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
             } else { 
                  switch (key as keyof (CardLayout & BackCardLayout)) {
                     case 'studentPhoto':
-                        content = <img src={convertDriveToLh3(data.studentPhoto)} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
+                        content = <img src={convertDriveToLh3(data.studentPhoto)} crossOrigin="anonymous" alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
                         break;
                     case 'fatherPhoto':
-                        content = <img src={convertDriveToLh3(data.fatherphoto)} alt="Father" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
+                        content = <img src={convertDriveToLh3(data.fatherphoto)} crossOrigin="anonymous" alt="Father" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
                         break;
                     case 'motherPhoto':
-                        content = <img src={convertDriveToLh3(data.motherphoto)} alt="Mother" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
+                        content = <img src={convertDriveToLh3(data.motherphoto)} crossOrigin="anonymous" alt="Mother" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
                         break;
                     case 'qrCode':
-                        content = qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" style={{ width: '100%', height: '100%' }} /> : null;
+                        content = qrCodeUrl ? <img src={qrCodeUrl} crossOrigin="anonymous" alt="QR Code" style={{ width: '100%', height: '100%' }} /> : null;
                         break;
                 }
             }
