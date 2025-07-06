@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef, useCallback } from 'react';
@@ -152,8 +153,8 @@ export function CardGenerator() {
           toPng(backRendererRef.current, imageOptions),
         ]);
 
-        frontZip.file(`${i + 1}_${row.name}_front.png`, frontDataUrl.split(',')[1], { base64: true });
-        backZip.file(`${i + 1}_${row.name}_back.png`, backDataUrl.split(',')[1], { base64: true });
+        frontZip.file(`${i + 1}_page_1.png`, frontDataUrl.split(',')[1], { base64: true });
+        backZip.file(`${i + 1}_page_2.png`, backDataUrl.split(',')[1], { base64: true });
       } catch (error) {
         console.error("Failed to generate card image", error);
         toast({ variant: "destructive", title: "Image Generation Failed", description: "Could not generate card image. See console for details." });
