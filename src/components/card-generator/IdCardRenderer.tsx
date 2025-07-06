@@ -72,14 +72,14 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
           width: '100%',
           height: `${fieldHeight}px`,
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           ...bodyStyle,
-          ...(key === 'class' && { backgroundColor: '#FEF9C3' })
+          ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '12px' })
         }}>
           <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px` }}>
             {fieldLabels[key as keyof typeof fieldLabels]}
           </div>
-          <div style={{ width: '50%', textAlign: 'left', fontSize: `${fontLayout.valueFontSize}px` }}>
+          <div style={{ width: '50%', textAlign: 'left', paddingLeft: '8px', fontSize: `${fontLayout.valueFontSize}px` }}>
             {value}
           </div>
         </div>

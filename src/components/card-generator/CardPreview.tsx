@@ -38,7 +38,8 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
   const convertDriveToLh3 = (link: string | undefined): string => {
     if (!link) return "https://placehold.co/250x250/EBF5FB/7f8c8d?text=Photo";
     if (link.includes("drive.google.com")) {
-      const fileId = link.split('/d/')[1]?.split('/')[0];
+      const fileIdMatch = link.match(/file\/d\/([a-zA-Z0-9_-]+)/) || link.match(/id=([a-zA-Z0-9_-]+)/);
+      const fileId = fileIdMatch ? fileIdMatch[1] : null;
       return fileId ? `https://lh3.googleusercontent.com/d/${fileId}=s400` : link;
     }
     return link;
@@ -63,7 +64,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
       if (!fontLayout.visible) return null;
 
       const fieldHeight = (key === 'address' ? fontLayout.height! : 40) * scale;
-      const value = data?.[key] || `{${key}}`;
+      const value = data?.[key as keyof CardData] || `{${key}}`;
 
       const element = (
         <div
@@ -75,14 +76,14 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
             height: `${fieldHeight}px`,
             fontFamily: "'PT Sans', sans-serif",
             color: 'black',
-            alignItems: 'flex-start',
-            ...(key === 'class' && { backgroundColor: '#FEF9C3' })
+            alignItems: 'center',
+            ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '8px' })
           }}
         >
           <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px` }}>
             {fieldLabels[key as keyof typeof fieldLabels]}
           </div>
-          <div className="w-1/2 text-left" style={{ fontSize: `${fontLayout.valueFontSize * scale}px` }}>
+          <div className="w-1/2 text-left pl-2" style={{ fontSize: `${fontLayout.valueFontSize * scale}px` }}>
             {value}
           </div>
         </div>
