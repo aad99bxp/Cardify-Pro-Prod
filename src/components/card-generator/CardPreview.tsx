@@ -76,7 +76,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
             height: `${fieldHeight}px`,
             fontFamily: "'PT Sans', sans-serif",
             color: 'black',
-            alignItems: 'center',
+            alignItems: key === 'address' ? 'flex-start' : 'center',
             ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '8px' })
           }}
         >
@@ -124,7 +124,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
     } else {
       switch (key) {
         case 'studentPhoto':
-          content = <img src={convertDriveToLh3(data?.studentPhoto)} alt="Student" className="w-full h-full object-cover rounded-2xl" />;
+          content = <img src={convertDriveToLh3(data?.studentPhoto)} alt="Student" className="w-full h-full object-cover object-top rounded-2xl" />;
           break;
         case 'fatherPhoto':
           content = <img src={convertDriveToLh3(data?.fatherphoto)} alt="Father" className="w-full h-full object-cover rounded-2xl" />;

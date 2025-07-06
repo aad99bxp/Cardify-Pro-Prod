@@ -72,7 +72,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
           width: '100%',
           height: `${fieldHeight}px`,
           display: 'flex',
-          alignItems: 'center',
+          alignItems: key === 'address' ? 'flex-start' : 'center',
           ...bodyStyle,
           ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '12px' })
         }}>
@@ -143,7 +143,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
             } else { 
                  switch (key as keyof (CardLayout & BackCardLayout)) {
                     case 'studentPhoto':
-                        content = <img src={convertDriveToLh3(data.studentPhoto)} crossOrigin="anonymous" alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
+                        content = <img src={convertDriveToLh3(data.studentPhoto)} crossOrigin="anonymous" alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: '32px' }} />;
                         break;
                     case 'fatherPhoto':
                         content = <img src={convertDriveToLh3(data.fatherphoto)} crossOrigin="anonymous" alt="Father" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;
