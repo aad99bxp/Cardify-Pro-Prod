@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -76,15 +77,22 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
             height: `${fieldHeight}px`,
             fontFamily: "'PT Sans', sans-serif",
             color: 'black',
-            alignItems: key === 'address' ? 'flex-start' : 'center',
-            ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '8px' })
+            alignItems: 'center',
+            ...(key === 'address' && { alignItems: 'flex-start' }),
+            ...(key === 'class' && { padding: `0 ${20 * scale}px` })
           }}
         >
-          <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px` }}>
-            {fieldLabels[key as keyof typeof fieldLabels]}
-          </div>
-          <div className="w-1/2 text-left pl-2" style={{ fontSize: `${fontLayout.valueFontSize * scale}px` }}>
-            {value}
+          <div className="w-full flex" style={{ 
+            height: '100%', 
+            alignItems: key === 'address' ? 'flex-start' : 'center',
+            ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '8px' })
+          }}>
+            <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px` }}>
+              {fieldLabels[key as keyof typeof fieldLabels]}
+            </div>
+            <div className="w-1/2 text-left pl-2" style={{ fontSize: `${fontLayout.valueFontSize * scale}px` }}>
+              {value}
+            </div>
           </div>
         </div>
       );

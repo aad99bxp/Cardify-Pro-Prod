@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { forwardRef, useEffect, useState } from 'react';
@@ -74,13 +75,21 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
           display: 'flex',
           alignItems: key === 'address' ? 'flex-start' : 'center',
           ...bodyStyle,
-          ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '12px' })
+          ...(key === 'class' && { padding: '0 20px' })
         }}>
-          <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px` }}>
-            {fieldLabels[key as keyof typeof fieldLabels]}
-          </div>
-          <div style={{ width: '50%', textAlign: 'left', paddingLeft: '8px', fontSize: `${fontLayout.valueFontSize}px` }}>
-            {value}
+          <div style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: key === 'address' ? 'flex-start' : 'center',
+            ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '12px' })
+          }}>
+            <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px` }}>
+              {fieldLabels[key as keyof typeof fieldLabels]}
+            </div>
+            <div style={{ width: '50%', textAlign: 'left', paddingLeft: '8px', fontSize: `${fontLayout.valueFontSize}px` }}>
+              {value}
+            </div>
           </div>
         </div>
       );
