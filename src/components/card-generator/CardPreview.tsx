@@ -79,7 +79,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
             color: 'black',
             alignItems: 'center',
             ...(key === 'address' && { alignItems: 'flex-start' }),
-            ...(key === 'class' && { padding: `0 ${20 * scale}px` })
+            ...(key === 'class' && { padding: '0 25%' })
           }}
         >
           <div className="w-full flex" style={{ 

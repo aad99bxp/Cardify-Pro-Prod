@@ -75,7 +75,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
           display: 'flex',
           alignItems: key === 'address' ? 'flex-start' : 'center',
           ...bodyStyle,
-          ...(key === 'class' && { padding: '0 20px' })
+          ...(key === 'class' && { padding: '0 25%' })
         }}>
           <div style={{
             width: '100%',
