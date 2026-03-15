@@ -16,6 +16,7 @@ interface CardPreviewProps {
   onLayoutChange: (key: LayoutKey | BackLayoutKey, newLayout: Partial<ElementLayout>) => void;
   data: CardData | null;
   cardType: 'front' | 'back';
+  detailFieldsOrder?: (keyof CardLayout)[];
 }
 
 const CARD_ASPECT_RATIO = 1016 / 637; // height/width
@@ -23,16 +24,19 @@ const PREVIEW_WIDTH = 382.2; // 60% of 637
 
 const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
   class: 'Class:',
+  rollNo: 'Roll No.:',
+  section: 'Section:',
   dob: 'D.O.B:',
   fatherName: "Father's Name:",
+  motherName: "Mother's Name:",
+  admissionNo: 'Admission No.:',
   contact: 'Contact:',
   address: 'Address:',
 };
 
-const detailFields: (keyof CardLayout)[] = ['class', 'dob', 'fatherName', 'contact', 'address'];
 const positionableElementKeys = ['studentPhoto', 'name', 'detailsGroup', 'fatherPhoto', 'motherPhoto', 'qrCode', 'username'];
 
-export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: CardPreviewProps) {
+export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, detailFieldsOrder }: CardPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
@@ -57,10 +61,11 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
   }, [data, cardType]);
 
   const renderDetailsGroup = (scale: number) => {
+    if (!detailFieldsOrder) return null;
     const detailsLayout = layout as CardLayout;
     let yOffset = 0;
 
-    return detailFields.map(key => {
+    return detailFieldsOrder.map(key => {
       const fontLayout = detailsLayout[key as keyof CardLayout] as FontLayout & { height?: number };
       if (!fontLayout.visible) return null;
 
@@ -79,7 +84,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
             color: 'black',
             alignItems: 'center',
             ...(key === 'address' && { alignItems: 'flex-start' }),
-            ...(key === 'class' && { padding: '0 25%' })
+            ...(key === 'class' && { padding: '0 10%' })
           }}
         >
           <div className="w-full flex" style={{ 

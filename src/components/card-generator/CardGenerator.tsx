@@ -8,21 +8,29 @@ import QRCode from 'qrcode';
 import JSZip from 'jszip';
 import { toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
-import type { Layout, CardData, ElementLayout, LayoutKey, BackLayoutKey } from '@/lib/card-types';
+import type { Layout, CardData, ElementLayout, LayoutKey, BackLayoutKey, CardLayout } from '@/lib/card-types';
 import { ControlPanel } from './ControlPanel';
 import { EditorPanel } from './EditorPanel';
 import IdCardRenderer from './IdCardRenderer';
 import { useToast } from "@/hooks/use-toast"
 import { Progress } from "@/components/ui/progress"
 
+const initialDetailFields: (keyof CardLayout)[] = [
+  'class', 'rollNo', 'section', 'dob', 'fatherName', 'motherName', 'admissionNo', 'contact', 'address'
+];
+
 const initialLayout: Layout = {
   front: {
     studentPhoto: { x: 194, y: 148, width: 250, height: 250, visible: true },
     name: { x: 20, y: 420, width: 597, height: 60, valueFontSize: 40, visible: true },
-    detailsGroup: { x: 120, y: 520, width: 400, height: 280, visible: true },
+    detailsGroup: { x: 120, y: 520, width: 400, height: 360, visible: true },
     class: { labelFontSize: 24, valueFontSize: 24, visible: true },
+    rollNo: { labelFontSize: 24, valueFontSize: 24, visible: true },
+    section: { labelFontSize: 24, valueFontSize: 24, visible: true },
     dob: { labelFontSize: 24, valueFontSize: 24, visible: true },
     fatherName: { labelFontSize: 24, valueFontSize: 24, visible: true },
+    motherName: { labelFontSize: 24, valueFontSize: 24, visible: true },
+    admissionNo: { labelFontSize: 24, valueFontSize: 24, visible: true },
     contact: { labelFontSize: 24, valueFontSize: 24, visible: true },
     address: { labelFontSize: 24, valueFontSize: 24, visible: true, height: 80 },
   },
@@ -40,6 +48,7 @@ export function CardGenerator() {
   const [backBg, setBackBg] = useState<string | null>("https://lh3.googleusercontent.com/d/1QJ2pNjvRLJFZnBxfVm_B2O_fxe63ZJ1E=s1600");
   const [csvData, setCsvData] = useState<CardData[]>([]);
   const [layout, setLayout] = useState<Layout>(initialLayout);
+  const [detailFieldsOrder, setDetailFieldsOrder] = useState<(keyof CardLayout)[]>(initialDetailFields);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [firstRowData, setFirstRowData] = useState<CardData | null>(null);
@@ -102,6 +111,22 @@ export function CardGenerator() {
       },
     }));
   }, []);
+
+  const updateFieldVisibility = useCallback((key: LayoutKey, visible: boolean) => {
+    updateLayout('front', key, { visible });
+  }, [updateLayout]);
+
+  const moveField = useCallback((index: number, direction: 'up' | 'down') => {
+    setDetailFieldsOrder(prev => {
+      const newOrder = [...prev];
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= newOrder.length) return prev;
+      const [item] = newOrder.splice(index, 1);
+      newOrder.splice(targetIndex, 0, item);
+      return newOrder;
+    });
+  }, []);
+
 
   const handleGenerate = async () => {
     if (csvData.length === 0) {
@@ -201,6 +226,9 @@ export function CardGenerator() {
           layout={layout}
           onLayoutChange={updateLayout}
           data={firstRowData}
+          detailFieldsOrder={detailFieldsOrder}
+          onFieldVisibilityChange={updateFieldVisibility}
+          onMoveField={moveField}
         />
         {isProcessing && (
             <div className="fixed inset-0 bg-black/50 flex flex-col items-center justify-center z-50">
@@ -214,7 +242,7 @@ export function CardGenerator() {
         )}
       </main>
       <div style={{ position: 'absolute', top: '-2000px', left: 0, zIndex: -10, opacity: 1, pointerEvents: 'auto', width: 'auto', height: 'auto' }}>
-        <IdCardRenderer ref={frontRendererRef} cardType="front" bg={frontBg} layout={layout.front} data={firstRowData} />
+        <IdCardRenderer ref={frontRendererRef} cardType="front" bg={frontBg} layout={layout.front} data={firstRowData} detailFieldsOrder={detailFieldsOrder} />
         <IdCardRenderer ref={backRendererRef} cardType="back" bg={backBg} layout={layout.back} data={firstRowData} />
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import { CardPreview } from './CardPreview';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { Layout, CardData, ElementLayout, LayoutKey, BackLayoutKey } from '@/lib/card-types';
+import type { Layout, CardData, ElementLayout, LayoutKey, BackLayoutKey, CardLayout } from '@/lib/card-types';
 import { LayoutControlsPanel } from './LayoutControlsPanel';
 
 interface EditorPanelProps {
@@ -11,9 +11,12 @@ interface EditorPanelProps {
   layout: Layout;
   onLayoutChange: (cardType: 'front' | 'back', key: LayoutKey | BackLayoutKey, newLayout: Partial<ElementLayout>) => void;
   data: CardData | null;
+  detailFieldsOrder: (keyof CardLayout)[];
+  onFieldVisibilityChange: (key: LayoutKey, visible: boolean) => void;
+  onMoveField: (index: number, direction: 'up' | 'down') => void;
 }
 
-export function EditorPanel({ frontBg, backBg, layout, onLayoutChange, data }: EditorPanelProps) {
+export function EditorPanel({ frontBg, backBg, layout, onLayoutChange, data, detailFieldsOrder, onFieldVisibilityChange, onMoveField }: EditorPanelProps) {
   return (
     <div className="flex-1 bg-card/50 p-4 rounded-lg border border-border">
        <Tabs defaultValue="front" className="w-full">
@@ -30,11 +33,15 @@ export function EditorPanel({ frontBg, backBg, layout, onLayoutChange, data }: E
               onLayoutChange={(key, newLayout) => onLayoutChange('front', key as LayoutKey, newLayout)}
               data={data}
               cardType="front"
+              detailFieldsOrder={detailFieldsOrder}
             />
             <LayoutControlsPanel 
               cardType="front"
               layout={layout.front}
               onLayoutChange={(key, newLayout) => onLayoutChange('front', key as LayoutKey, newLayout)}
+              detailFieldsOrder={detailFieldsOrder}
+              onFieldVisibilityChange={onFieldVisibilityChange}
+              onMoveField={onMoveField}
             />
           </div>
         </TabsContent>

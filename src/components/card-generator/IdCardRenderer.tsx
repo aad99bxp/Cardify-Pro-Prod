@@ -10,6 +10,7 @@ interface IdCardRendererProps {
   bg: string | null;
   layout: CardLayout | BackCardLayout;
   data: CardData | null;
+  detailFieldsOrder?: (keyof CardLayout)[];
 }
 
 const convertDriveToLh3 = (link: string | undefined): string => {
@@ -24,18 +25,21 @@ const convertDriveToLh3 = (link: string | undefined): string => {
 
 const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
   class: 'Class:',
+  rollNo: 'Roll No.:',
+  section: 'Section:',
   dob: 'D.O.B:',
   fatherName: "Father's Name:",
+  motherName: "Mother's Name:",
+  admissionNo: 'Admission No.:',
   contact: 'Contact:',
   address: 'Address:',
 };
 
-const detailFields: (keyof CardLayout)[] = ['class', 'dob', 'fatherName', 'contact', 'address'];
 const positionableElementKeys = ['studentPhoto', 'name', 'detailsGroup', 'fatherPhoto', 'motherPhoto', 'qrCode', 'username'];
 
 
 const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
-  ({ cardType, bg, layout, data }, ref) => {
+  ({ cardType, bg, layout, data, detailFieldsOrder }, ref) => {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   useEffect(() => {
@@ -56,10 +60,11 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
   const bodyStyle: React.CSSProperties = { fontFamily: "'PT Sans', sans-serif" };
 
   const renderDetailsGroup = () => {
+    if (!detailFieldsOrder) return null;
     const detailsLayout = layout as CardLayout;
     let yOffset = 0;
 
-    return detailFields.map(key => {
+    return detailFieldsOrder.map(key => {
       const fontLayout = detailsLayout[key as keyof CardLayout] as FontLayout & { height?: number };
       if (!fontLayout.visible) return null;
 
@@ -75,7 +80,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
           display: 'flex',
           alignItems: key === 'address' ? 'flex-start' : 'center',
           ...bodyStyle,
-          ...(key === 'class' && { padding: '0 25%' })
+          ...(key === 'class' && { padding: '0 10%' })
         }}>
           <div style={{
             width: '100%',

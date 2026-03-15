@@ -17,8 +17,12 @@ export interface CardLayout {
   name: ElementLayout & { valueFontSize: number };
   detailsGroup: ElementLayout;
   class: FontLayout;
+  rollNo: FontLayout;
+  section: FontLayout;
   dob: FontLayout;
   fatherName: FontLayout;
+  motherName: FontLayout;
+  admissionNo: FontLayout;
   contact: FontLayout;
   address: FontLayout & { height: number };
 }
@@ -43,8 +47,12 @@ export interface CardData {
   studentPhoto?: string;
   name?: string;
   class?: string;
+  rollNo?: string;
+  section?: string;
   dob?: string;
   fatherName?: string;
+  motherName?: string;
+  admissionNo?: string;
   contact?: string;
   address?: string;
   fatherphoto?: string;
