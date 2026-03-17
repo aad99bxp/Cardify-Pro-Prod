@@ -75,17 +75,17 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
       const element = (
         <div
           key={key}
-          className="w-full"
           style={{
             position: 'absolute',
             top: `${yOffset}px`,
+            width: '100%',
             height: `${fieldHeight}px`,
             fontFamily: "'PT Sans', sans-serif",
             color: 'black',
             textAlign: detailsLayout.detailsGroup.textAlign,
           }}
         >
-          <div className="inline-flex w-full" style={{ 
+          <div className="inline-flex" style={{ 
             height: '100%', 
             alignItems: key === 'address' ? 'flex-start' : 'center',
             backgroundColor: key === 'class' ? (detailsLayout.class as any).highlightColor : 'transparent',
@@ -124,15 +124,22 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
       );
     } else if (key === 'name') {
       content = (
-        <div className="w-full h-full flex items-center" style={{ 
+        <div className="flex items-center" style={{ 
             ...headlineStyle,
+            width: '100%',
+            height: '100%',
+            justifyContent: elementLayout.textAlign,
             fontSize: `${elementLayout.valueFontSize * scale}px`,
-            backgroundColor: elementLayout.highlightColor,
             color: elementLayout.textColor,
+          }}>
+          <span style={{
+            backgroundColor: elementLayout.highlightColor,
             padding: '0 8px',
             borderRadius: '8px',
+            textAlign: elementLayout.textAlign
           }}>
-          <strong style={{width: '100%', textAlign: elementLayout.textAlign}}>{data?.name || '{name}'}</strong>
+            <strong style={{width: '100%'}}>{data?.name || '{name}'}</strong>
+          </span>
         </div>
       );
     } else if (key === 'username') {

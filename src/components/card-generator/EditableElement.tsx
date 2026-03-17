@@ -19,6 +19,9 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
   const [isResizing, setIsResizing] = useState(false);
 
   const handleDragStart = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('.resize-handle')) {
+        return;
+    }
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
@@ -45,20 +48,57 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
   }, [layout.x, layout.y, onUpdate, scale]);
 
 
-  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+  const handleResizeStart = useCallback((e: React.MouseEvent, direction: string) => {
     e.preventDefault();
     e.stopPropagation();
     setIsResizing(true);
     
-    const startX = e.clientX / scale;
-    const startY = e.clientY / scale;
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startLeft = layout.x;
+    const startTop = layout.y;
     const startWidth = layout.width;
     const startHeight = layout.height;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      const newWidth = startWidth + (moveEvent.clientX / scale - startX);
-      const newHeight = startHeight + (moveEvent.clientY / scale - startY);
-      onUpdate({ width: Math.max(20, newWidth), height: Math.max(20, newHeight) });
+        const dx = (moveEvent.clientX - startX) / scale;
+        const dy = (moveEvent.clientY - startY) / scale;
+
+        let newX = startLeft;
+        let newY = startTop;
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+        
+        if (direction.includes('right')) {
+            newWidth = startWidth + dx;
+        }
+        if (direction.includes('left')) {
+            newWidth = startWidth - dx;
+            newX = startLeft + dx;
+        }
+        if (direction.includes('bottom')) {
+            newHeight = startHeight + dy;
+        }
+        if (direction.includes('top')) {
+            newHeight = startHeight - dy;
+            newY = startTop + dy;
+        }
+        
+        const minSize = 20;
+        if (newWidth < minSize) {
+            if (direction.includes('left')) {
+                newX = newX + newWidth - minSize;
+            }
+            newWidth = minSize;
+        }
+        if (newHeight < minSize) {
+            if (direction.includes('top')) {
+                newY = newY + newHeight - minSize;
+            }
+            newHeight = minSize;
+        }
+
+        onUpdate({ x: newX, y: newY, width: newWidth, height: newHeight });
     };
 
     const handleMouseUp = () => {
@@ -70,7 +110,28 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
 
-  }, [layout.width, layout.height, onUpdate, scale]);
+  }, [layout.x, layout.y, layout.width, layout.height, onUpdate, scale]);
+
+  const handleStyles: React.CSSProperties = {
+    position: 'absolute',
+    width: '10px',
+    height: '10px',
+    backgroundColor: 'hsl(var(--primary))',
+    border: '1px solid hsl(var(--card))',
+    borderRadius: '50%',
+    zIndex: 20,
+  };
+
+  const handles = [
+    { direction: 'top-left', style: { top: -5, left: -5, cursor: 'nwse-resize' } },
+    { direction: 'top', style: { top: -5, left: '50%', transform: 'translateX(-50%)', cursor: 'ns-resize' } },
+    { direction: 'top-right', style: { top: -5, right: -5, cursor: 'nesw-resize' } },
+    { direction: 'right', style: { top: '50%', right: -5, transform: 'translateY(-50%)', cursor: 'ew-resize' } },
+    { direction: 'bottom-right', style: { bottom: -5, right: -5, cursor: 'nwse-resize' } },
+    { direction: 'bottom', style: { bottom: -5, left: '50%', transform: 'translateX(-50%)', cursor: 'ns-resize' } },
+    { direction: 'bottom-left', style: { bottom: -5, left: -5, cursor: 'nesw-resize' } },
+    { direction: 'left', style: { top: '50%', left: -5, transform: 'translateY(-50%)', cursor: 'ew-resize' } },
+  ];
 
   return (
     <div
@@ -87,13 +148,17 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
       )}
       onMouseDown={handleDragStart}
     >
-      <div className="w-full h-full">
+      <div className="w-full h-full relative">
         {children}
       </div>
-      <div
-        className="absolute -bottom-1 -right-1 w-3 h-3 bg-primary rounded-full cursor-se-resize border-2 border-card"
-        onMouseDown={handleResizeStart}
-      />
+      {handles.map(handle => (
+        <div
+            key={handle.direction}
+            className="resize-handle"
+            style={{ ...handleStyles, ...handle.style }}
+            onMouseDown={(e) => handleResizeStart(e, handle.direction)}
+        />
+      ))}
     </div>
   );
 }

@@ -82,9 +82,8 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
           ...bodyStyle,
         }}>
           <div style={{
-            width: '100%',
-            height: '100%',
             display: 'inline-flex',
+            height: '100%',
             alignItems: key === 'address' ? 'flex-start' : 'center',
             backgroundColor: key === 'class' ? (frontLayout.class as any).highlightColor : 'transparent',
             padding: key === 'class' ? `0 ${0.1 * frontLayout.detailsGroup.width}px` : '0',
@@ -137,7 +136,6 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 width: `${elementLayout.width}px`,
                 height: `${elementLayout.height}px`,
                 display: 'flex',
-                alignItems: 'center',
                 color: 'black',
                 boxSizing: 'border-box'
             };
@@ -153,16 +151,27 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 </div>
               );
             } else if (key === 'name') {
-                baseStyle.backgroundColor = elementLayout.highlightColor;
+                baseStyle.alignItems = 'center';
+                baseStyle.justifyContent = elementLayout.textAlign;
                 baseStyle.color = elementLayout.textColor;
-                baseStyle.padding = '0 8px';
-                baseStyle.borderRadius = '8px';
-                content = <strong style={{...headlineStyle, fontSize: `${elementLayout.valueFontSize}px`, width: '100%', textAlign: elementLayout.textAlign }}>{data.name || '{name}'}</strong>;
+                
+                content = (
+                  <span style={{
+                    backgroundColor: elementLayout.highlightColor,
+                    padding: '0 8px',
+                    borderRadius: '8px',
+                    textAlign: elementLayout.textAlign
+                  }}>
+                    <strong style={{...headlineStyle, fontSize: `${elementLayout.valueFontSize}px`, width: '100%' }}>{data.name || '{name}'}</strong>
+                  </span>
+                );
             } else if (key === 'username') {
                 baseStyle.justifyContent = 'center';
+                baseStyle.alignItems = 'center';
                 content = <p style={{ ...bodyStyle, fontSize: `${elementLayout.valueFontSize}px`, textAlign: 'center', width: '100%' }}>{data.username || '{username}'}</p>;
             } else { 
                  baseStyle.justifyContent = 'center';
+                 baseStyle.alignItems = 'center';
                  switch (key as keyof (CardLayout & BackCardLayout)) {
                     case 'studentPhoto':
                         content = <img src={convertDriveToLh3(data.studentPhoto)} crossOrigin="anonymous" alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: '32px', border: `${elementLayout.borderWidth}px solid ${elementLayout.borderColor}`, boxSizing: 'border-box' }} />;
