@@ -85,19 +85,22 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
             textAlign: detailsLayout.detailsGroup.textAlign,
           }}
         >
-          <div className="inline-flex" style={{ 
-            height: '100%', 
-            alignItems: key === 'address' ? 'flex-start' : 'center',
-            backgroundColor: key === 'class' ? (detailsLayout.class as any).highlightColor : 'transparent',
-            padding: key === 'class' ? `0 ${0.1 * detailsLayout.detailsGroup.width * scale}px` : '0',
-            borderRadius: key === 'class' ? '8px' : '0',
-            boxSizing: 'border-box'
-          }}>
-            <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
-              {fieldLabels[key as keyof typeof fieldLabels]}
-            </div>
-            <div className="w-1/2 text-left pl-2" style={{ fontSize: `${fontLayout.valueFontSize * scale}px` }}>
-              {value}
+          <div className="inline-flex" style={{ height: '100%', alignItems: key === 'address' ? 'flex-start' : 'center' }}>
+            <div style={{
+              display: 'flex',
+              height: '100%',
+              alignItems: key === 'address' ? 'flex-start' : 'center',
+              backgroundColor: key === 'class' ? (detailsLayout.class as any).highlightColor : 'transparent',
+              padding: key === 'class' ? `0 ${8 * scale}px` : '0',
+              borderRadius: key === 'class' ? '8px' : '0',
+              boxSizing: 'border-box',
+            }}>
+              <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
+                {fieldLabels[key as keyof typeof fieldLabels]}
+              </div>
+              <div className="w-1/2 text-left pl-2" style={{ fontSize: `${fontLayout.valueFontSize * scale}px` }}>
+                {value}
+              </div>
             </div>
           </div>
         </div>
@@ -128,7 +131,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
             ...headlineStyle,
             width: '100%',
             height: '100%',
-            justifyContent: elementLayout.textAlign,
+            justifyContent: elementLayout.textAlign === 'left' ? 'flex-start' : elementLayout.textAlign === 'right' ? 'flex-end' : 'center',
             fontSize: `${elementLayout.valueFontSize * scale}px`,
             color: elementLayout.textColor,
           }}>
@@ -136,7 +139,6 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
             backgroundColor: elementLayout.highlightColor,
             padding: '0 8px',
             borderRadius: '8px',
-            textAlign: elementLayout.textAlign
           }}>
             <strong style={{width: '100%'}}>{data?.name || '{name}'}</strong>
           </span>

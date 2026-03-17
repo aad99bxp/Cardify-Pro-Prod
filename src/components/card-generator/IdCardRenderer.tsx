@@ -85,16 +85,22 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
             display: 'inline-flex',
             height: '100%',
             alignItems: key === 'address' ? 'flex-start' : 'center',
-            backgroundColor: key === 'class' ? (frontLayout.class as any).highlightColor : 'transparent',
-            padding: key === 'class' ? `0 ${0.1 * frontLayout.detailsGroup.width}px` : '0',
-            borderRadius: key === 'class' ? '12px' : '0',
-            boxSizing: 'border-box'
           }}>
-            <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px`, whiteSpace: 'nowrap' }}>
-              {fieldLabels[key as keyof typeof fieldLabels]}
-            </div>
-            <div style={{ width: '50%', textAlign: 'left', paddingLeft: '8px', fontSize: `${fontLayout.valueFontSize}px` }}>
-              {value}
+            <div style={{
+                display: 'flex',
+                height: '100%',
+                alignItems: key === 'address' ? 'flex-start' : 'center',
+                backgroundColor: key === 'class' ? (frontLayout.class as any).highlightColor : 'transparent',
+                padding: key === 'class' ? '0 8px' : '0',
+                borderRadius: key === 'class' ? '12px' : '0',
+                boxSizing: 'border-box'
+            }}>
+                <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px`, whiteSpace: 'nowrap' }}>
+                  {fieldLabels[key as keyof typeof fieldLabels]}
+                </div>
+                <div style={{ width: '50%', textAlign: 'left', paddingLeft: '8px', fontSize: `${fontLayout.valueFontSize}px` }}>
+                  {value}
+                </div>
             </div>
           </div>
         </div>
@@ -144,15 +150,15 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
 
             if (key === 'detailsGroup') {
               baseStyle.display = 'block';
-              baseStyle.textAlign = elementLayout.textAlign;
+              baseStyle.textAlign = 'left';
               content = (
-                <div style={{ position: 'relative', width: '100%', height: '100%'}}>
+                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden'}}>
                   {renderDetailsGroup()}
                 </div>
               );
             } else if (key === 'name') {
                 baseStyle.alignItems = 'center';
-                baseStyle.justifyContent = elementLayout.textAlign;
+                baseStyle.justifyContent = elementLayout.textAlign === 'left' ? 'flex-start' : elementLayout.textAlign === 'right' ? 'flex-end' : 'center';
                 baseStyle.color = elementLayout.textColor;
                 
                 content = (
@@ -160,7 +166,6 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                     backgroundColor: elementLayout.highlightColor,
                     padding: '0 8px',
                     borderRadius: '8px',
-                    textAlign: elementLayout.textAlign
                   }}>
                     <strong style={{...headlineStyle, fontSize: `${elementLayout.valueFontSize}px`, width: '100%' }}>{data.name || '{name}'}</strong>
                   </span>
