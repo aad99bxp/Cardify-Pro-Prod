@@ -19,8 +19,8 @@ interface CardPreviewProps {
   detailFieldsOrder?: (keyof CardLayout)[];
 }
 
-const CARD_ASPECT_RATIO = 86 / 54; // height/width
-const PREVIEW_WIDTH = 324; // 54mm * 6
+const CARD_ASPECT_RATIO = 1016 / 637;
+const PREVIEW_WIDTH = 324;
 
 const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
   class: 'Class:',
@@ -93,7 +93,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
             borderRadius: key === 'class' ? '8px' : '0',
             boxSizing: 'border-box'
           }}>
-            <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px` }}>
+            <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
               {fieldLabels[key as keyof typeof fieldLabels]}
             </div>
             <div className="w-1/2 text-left pl-2" style={{ fontSize: `${fontLayout.valueFontSize * scale}px` }}>

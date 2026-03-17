@@ -90,7 +90,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
             borderRadius: key === 'class' ? '12px' : '0',
             boxSizing: 'border-box'
           }}>
-            <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px` }}>
+            <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px`, whiteSpace: 'nowrap' }}>
               {fieldLabels[key as keyof typeof fieldLabels]}
             </div>
             <div style={{ width: '50%', textAlign: 'left', paddingLeft: '8px', fontSize: `${fontLayout.valueFontSize}px` }}>
