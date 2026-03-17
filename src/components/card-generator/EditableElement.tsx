@@ -52,65 +52,77 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
     e.preventDefault();
     e.stopPropagation();
     setIsResizing(true);
-    
+
     const startX = e.clientX;
     const startY = e.clientY;
-    const startLeft = layout.x;
-    const startTop = layout.y;
-    const startWidth = layout.width;
-    const startHeight = layout.height;
+    const startLayout = { ...layout };
+    const originalAspectRatio = startLayout.width / startLayout.height;
+    const isCorner = direction.includes('-');
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
-        const dx = (moveEvent.clientX - startX) / scale;
-        const dy = (moveEvent.clientY - startY) / scale;
+      const dx = (moveEvent.clientX - startX) / scale;
+      const dy = (moveEvent.clientY - startY) / scale;
 
-        let newX = startLeft;
-        let newY = startTop;
-        let newWidth = startWidth;
-        let newHeight = startHeight;
-        
-        if (direction.includes('right')) {
-            newWidth = startWidth + dx;
-        }
-        if (direction.includes('left')) {
-            newWidth = startWidth - dx;
-            newX = startLeft + dx;
-        }
-        if (direction.includes('bottom')) {
-            newHeight = startHeight + dy;
-        }
-        if (direction.includes('top')) {
-            newHeight = startHeight - dy;
-            newY = startTop + dy;
-        }
-        
-        const minSize = 20;
-        if (newWidth < minSize) {
-            if (direction.includes('left')) {
-                newX = newX + newWidth - minSize;
-            }
-            newWidth = minSize;
-        }
-        if (newHeight < minSize) {
-            if (direction.includes('top')) {
-                newY = newY + newHeight - minSize;
-            }
-            newHeight = minSize;
-        }
+      let newX = startLayout.x;
+      let newY = startLayout.y;
+      let newWidth = startLayout.width;
+      let newHeight = startLayout.height;
 
-        onUpdate({ x: newX, y: newY, width: newWidth, height: newHeight });
+      if (isCorner) {
+        const widthChange = direction.includes('left') ? -dx : dx;
+        const heightChange = direction.includes('top') ? -dy : dy;
+        
+        if (Math.abs(widthChange) > Math.abs(heightChange)) {
+          newWidth = startLayout.width + widthChange;
+          newHeight = newWidth / originalAspectRatio;
+        } else {
+          newHeight = startLayout.height + heightChange;
+          newWidth = newHeight * originalAspectRatio;
+        }
+      } else { // Side handles
+        if (direction === 'right') {
+          newWidth = startLayout.width + dx;
+        } else if (direction === 'left') {
+          newWidth = startLayout.width - dx;
+          newX = startLayout.x + dx;
+        } else if (direction === 'bottom') {
+          newHeight = startLayout.height + dy;
+        } else if (direction === 'top') {
+          newHeight = startLayout.height - dy;
+          newY = startLayout.y + dy;
+        }
+      }
+      
+      const minSize = 20;
+      if (newWidth < minSize) {
+        newWidth = minSize;
+        if (isCorner) newHeight = newWidth / originalAspectRatio;
+      }
+      if (newHeight < minSize) {
+        newHeight = minSize;
+        if (isCorner) newWidth = newHeight * originalAspectRatio;
+      }
+
+      // After potential clamping, recalculate position for top/left drags
+      if (direction.includes('left')) {
+        newX = startLayout.x + startLayout.width - newWidth;
+      }
+      if (direction.includes('top')) {
+        newY = startLayout.y + startLayout.height - newHeight;
+      }
+
+      onUpdate({ x: newX, y: newY, width: newWidth, height: newHeight });
     };
 
     const handleMouseUp = () => {
-        setIsResizing(false);
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+      setIsResizing(false);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-
-  }, [layout.x, layout.y, layout.width, layout.height, onUpdate, scale]);
+  }, [layout, onUpdate, scale]);
 
   const handleStyles: React.CSSProperties = {
     position: 'absolute',
