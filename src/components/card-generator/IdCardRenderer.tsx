@@ -157,6 +157,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
               );
             } else if (key === 'name') {
                 baseStyle.backgroundColor = elementLayout.highlightColor;
+                baseStyle.color = elementLayout.textColor;
                 baseStyle.textAlign = elementLayout.textAlign;
                 baseStyle.padding = '0 8px';
                 baseStyle.borderRadius = '8px';

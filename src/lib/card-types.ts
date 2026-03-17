@@ -21,6 +21,7 @@ export interface CardLayout {
     valueFontSize: number;
     highlightColor: string;
     textAlign: 'left' | 'center' | 'right' | 'justify';
+    textColor: string;
   };
   detailsGroup: ElementLayout & {
     textAlign: 'left' | 'center' | 'right' | 'justify';

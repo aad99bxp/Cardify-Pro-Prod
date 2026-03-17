@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -97,11 +98,15 @@ export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFi
             </AccordionItem>
              {cardType === 'front' && (
               <AccordionItem value="highlights">
-                <AccordionTrigger><Palette className="mr-2 h-4 w-4" /> Highlights</AccordionTrigger>
+                <AccordionTrigger><Palette className="mr-2 h-4 w-4" /> Highlights & Colors</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                   <div className="grid gap-2">
                     <Label htmlFor="name-highlight-color">Name Highlight Color</Label>
                     <Input id="name-highlight-color" type="color" value={frontLayout.name.highlightColor} onChange={(e) => onLayoutChange('name', { highlightColor: e.target.value })} className="h-8"/>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="name-text-color">Name Text Color</Label>
+                    <Input id="name-text-color" type="color" value={frontLayout.name.textColor} onChange={(e) => onLayoutChange('name', { textColor: e.target.value })} className="h-8"/>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="class-highlight-color">Class Highlight Color</Label>

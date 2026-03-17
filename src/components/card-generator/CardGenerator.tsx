@@ -22,7 +22,7 @@ const initialDetailFields: (keyof CardLayout)[] = [
 const initialLayout: Layout = {
   front: {
     studentPhoto: { x: 194, y: 148, width: 250, height: 250, visible: true, borderColor: '#000000', borderWidth: 0 },
-    name: { x: 20, y: 420, width: 597, height: 60, valueFontSize: 40, visible: true, highlightColor: '#ffffff', textAlign: 'center' },
+    name: { x: 20, y: 420, width: 597, height: 60, valueFontSize: 40, visible: true, highlightColor: '#ffffff', textAlign: 'center', textColor: '#000000' },
     detailsGroup: { x: 120, y: 520, width: 400, height: 360, visible: true, textAlign: 'left', lineHeight: 1.5 },
     class: { labelFontSize: 24, valueFontSize: 24, visible: true, highlightColor: '#ffde59' },
     rollNo: { labelFontSize: 24, valueFontSize: 24, visible: true },
