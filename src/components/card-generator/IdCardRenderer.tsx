@@ -139,7 +139,6 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 height: `${elementLayout.height}px`,
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
                 color: 'black',
                 boxSizing: 'border-box'
             };
@@ -158,13 +157,14 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
             } else if (key === 'name') {
                 baseStyle.backgroundColor = elementLayout.highlightColor;
                 baseStyle.color = elementLayout.textColor;
-                baseStyle.textAlign = elementLayout.textAlign;
                 baseStyle.padding = '0 8px';
                 baseStyle.borderRadius = '8px';
-                content = <strong style={{...headlineStyle, fontSize: `${elementLayout.valueFontSize}px`, width: '100%' }}>{data.name || '{name}'}</strong>;
+                content = <strong style={{...headlineStyle, fontSize: `${elementLayout.valueFontSize}px`, width: '100%', textAlign: elementLayout.textAlign }}>{data.name || '{name}'}</strong>;
             } else if (key === 'username') {
+                baseStyle.justifyContent = 'center';
                 content = <p style={{ ...bodyStyle, fontSize: `${elementLayout.valueFontSize}px`, textAlign: 'center', width: '100%' }}>{data.username || '{username}'}</p>;
             } else { 
+                 baseStyle.justifyContent = 'center';
                  switch (key as keyof (CardLayout & BackCardLayout)) {
                     case 'studentPhoto':
                         content = <img src={convertDriveToLh3(data.studentPhoto)} crossOrigin="anonymous" alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: '32px', border: `${elementLayout.borderWidth}px solid ${elementLayout.borderColor}`, boxSizing: 'border-box' }} />;

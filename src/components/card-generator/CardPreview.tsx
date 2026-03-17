@@ -124,16 +124,15 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
       );
     } else if (key === 'name') {
       content = (
-        <div className="w-full h-full flex items-center justify-center" style={{ 
+        <div className="w-full h-full flex items-center" style={{ 
             ...headlineStyle,
             fontSize: `${elementLayout.valueFontSize * scale}px`,
             backgroundColor: elementLayout.highlightColor,
             color: elementLayout.textColor,
-            textAlign: elementLayout.textAlign,
             padding: '0 8px',
             borderRadius: '8px',
           }}>
-          <strong>{data?.name || '{name}'}</strong>
+          <strong style={{width: '100%', textAlign: elementLayout.textAlign}}>{data?.name || '{name}'}</strong>
         </div>
       );
     } else if (key === 'username') {
