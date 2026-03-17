@@ -21,10 +21,10 @@ const initialDetailFields: (keyof CardLayout)[] = [
 
 const initialLayout: Layout = {
   front: {
-    studentPhoto: { x: 194, y: 148, width: 250, height: 250, visible: true },
-    name: { x: 20, y: 420, width: 597, height: 60, valueFontSize: 40, visible: true },
-    detailsGroup: { x: 120, y: 520, width: 400, height: 360, visible: true },
-    class: { labelFontSize: 24, valueFontSize: 24, visible: true },
+    studentPhoto: { x: 194, y: 148, width: 250, height: 250, visible: true, borderColor: '#000000', borderWidth: 0 },
+    name: { x: 20, y: 420, width: 597, height: 60, valueFontSize: 40, visible: true, highlightColor: '#ffffff', textAlign: 'center' },
+    detailsGroup: { x: 120, y: 520, width: 400, height: 360, visible: true, textAlign: 'left', lineHeight: 1.5 },
+    class: { labelFontSize: 24, valueFontSize: 24, visible: true, highlightColor: '#ffde59' },
     rollNo: { labelFontSize: 24, valueFontSize: 24, visible: true },
     section: { labelFontSize: 24, valueFontSize: 24, visible: true },
     dob: { labelFontSize: 24, valueFontSize: 24, visible: true },
@@ -241,7 +241,7 @@ export function CardGenerator() {
             </div>
         )}
       </main>
-      <div style={{ position: 'absolute', top: '-2000px', left: 0, zIndex: -10, opacity: 1, pointerEvents: 'auto', width: 'auto', height: 'auto' }}>
+      <div style={{ position: 'absolute', top: '-2000px', left: 0, zIndex: -100, opacity: 1, pointerEvents: 'none', width: '637px', height: '1016px' }}>
         <IdCardRenderer ref={frontRendererRef} cardType="front" bg={frontBg} layout={layout.front} data={firstRowData} detailFieldsOrder={detailFieldsOrder} />
         <IdCardRenderer ref={backRendererRef} cardType="back" bg={backBg} layout={layout.back} data={firstRowData} />
       </div>

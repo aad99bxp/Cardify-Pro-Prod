@@ -41,6 +41,8 @@ const positionableElementKeys = ['studentPhoto', 'name', 'detailsGroup', 'father
 const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
   ({ cardType, bg, layout, data, detailFieldsOrder }, ref) => {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const frontLayout = layout as CardLayout;
+
 
   useEffect(() => {
     if (data?.qrCode) {
@@ -61,14 +63,13 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
 
   const renderDetailsGroup = () => {
     if (!detailFieldsOrder) return null;
-    const detailsLayout = layout as CardLayout;
     let yOffset = 0;
 
     return detailFieldsOrder.map(key => {
-      const fontLayout = detailsLayout[key as keyof CardLayout] as FontLayout & { height?: number };
+      const fontLayout = frontLayout[key as keyof CardLayout] as FontLayout & { height?: number };
       if (!fontLayout.visible) return null;
 
-      const fieldHeight = (key === 'address' ? fontLayout.height! : 40);
+      const fieldHeight = (key === 'address' ? fontLayout.height! : 40) * frontLayout.detailsGroup.lineHeight;
       const value = data[key as keyof CardData] || `{${key}}`;
 
       const element = (
@@ -80,14 +81,16 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
           display: 'flex',
           alignItems: key === 'address' ? 'flex-start' : 'center',
           ...bodyStyle,
-          ...(key === 'class' && { padding: '0 10%' })
         }}>
           <div style={{
             width: '100%',
             height: '100%',
             display: 'flex',
             alignItems: key === 'address' ? 'flex-start' : 'center',
-            ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '12px' })
+            backgroundColor: key === 'class' ? (frontLayout.class as any).highlightColor : 'transparent',
+            padding: key === 'class' ? `0 ${0.1 * frontLayout.detailsGroup.width}px` : '0',
+            borderRadius: key === 'class' ? '12px' : '0',
+            boxSizing: 'border-box'
           }}>
             <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px` }}>
               {fieldLabels[key as keyof typeof fieldLabels]}
@@ -138,6 +141,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'black',
+                boxSizing: 'border-box'
             };
 
             let content;
@@ -145,19 +149,24 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
             if (key === 'detailsGroup') {
               baseStyle.display = 'block';
               baseStyle.overflow = 'hidden';
+              baseStyle.textAlign = elementLayout.textAlign;
               content = (
                 <div style={{ position: 'relative', width: '100%', height: '100%'}}>
                   {renderDetailsGroup()}
                 </div>
               );
             } else if (key === 'name') {
-                content = <strong style={{...headlineStyle, fontSize: `${elementLayout.valueFontSize}px`, textAlign: 'center', width: '100%' }}>{data.name || '{name}'}</strong>;
+                baseStyle.backgroundColor = elementLayout.highlightColor;
+                baseStyle.textAlign = elementLayout.textAlign;
+                baseStyle.padding = '0 8px';
+                baseStyle.borderRadius = '8px';
+                content = <strong style={{...headlineStyle, fontSize: `${elementLayout.valueFontSize}px`, width: '100%' }}>{data.name || '{name}'}</strong>;
             } else if (key === 'username') {
                 content = <p style={{ ...bodyStyle, fontSize: `${elementLayout.valueFontSize}px`, textAlign: 'center', width: '100%' }}>{data.username || '{username}'}</p>;
             } else { 
                  switch (key as keyof (CardLayout & BackCardLayout)) {
                     case 'studentPhoto':
-                        content = <img src={convertDriveToLh3(data.studentPhoto)} crossOrigin="anonymous" alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: '32px' }} />;
+                        content = <img src={convertDriveToLh3(data.studentPhoto)} crossOrigin="anonymous" alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: '32px', border: `${elementLayout.borderWidth}px solid ${elementLayout.borderColor}`, boxSizing: 'border-box' }} />;
                         break;
                     case 'fatherPhoto':
                         content = <img src={convertDriveToLh3(data.fatherphoto)} crossOrigin="anonymous" alt="Father" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '32px' }} />;

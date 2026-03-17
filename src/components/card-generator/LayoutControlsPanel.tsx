@@ -4,9 +4,11 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { CardLayout, BackCardLayout, ElementLayout, LayoutKey, BackLayoutKey } from '@/lib/card-types';
-import { Type, Image as ImageIcon, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { Type, Image as ImageIcon, GripVertical, ChevronUp, ChevronDown, Palette, AlignHorizontalJustifyCenter, Square, Indent } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 
@@ -40,9 +42,18 @@ const humanReadableNames: Record<string, string> = {
 
 export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFieldsOrder, onFieldVisibilityChange, onMoveField }: LayoutControlsPanelProps) {
   const textElements = Object.entries(layout).filter(([_, v]) => v.valueFontSize);
+  const frontLayout = layout as CardLayout;
 
-  const handleSliderChange = (key: LayoutKey | BackLayoutKey, property: 'labelFontSize' | 'valueFontSize', value: number[]) => {
+  const handleSliderChange = (key: LayoutKey | BackLayoutKey, property: 'labelFontSize' | 'valueFontSize' | 'borderWidth', value: number[]) => {
     onLayoutChange(key, { [property]: value[0] });
+  };
+  
+  const handleAlignmentChange = (key: 'name' | 'detailsGroup', value: 'left' | 'center' | 'right' | 'justify') => {
+    if(value) onLayoutChange(key, { textAlign: value });
+  };
+
+  const handleLineHeightChange = (value: number[]) => {
+    onLayoutChange('detailsGroup', { lineHeight: value[0] });
   };
   
   return (
@@ -51,37 +62,7 @@ export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFi
         <CardTitle className="text-xl">Layout Controls</CardTitle>
       </CardHeader>
       <CardContent>
-        <Accordion type="multiple" className="w-full" defaultValue={['field-settings', 'font-sizes']}>
-            {cardType === 'front' && detailFieldsOrder && onFieldVisibilityChange && onMoveField && (
-                <AccordionItem value="field-settings">
-                    <AccordionTrigger><GripVertical className="mr-2 h-4 w-4" /> Field Settings</AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-2">
-                            <p className="text-sm text-muted-foreground pb-2">Toggle visibility and reorder fields.</p>
-                            {detailFieldsOrder.map((key, index) => (
-                                <div key={key} className="flex items-center justify-between p-2 border-b">
-                                    <Label htmlFor={`visible-${key}`} className="font-semibold text-sm">{humanReadableNames[key] || key}</Label>
-                                    <div className="flex items-center gap-2">
-                                        <Switch
-                                            id={`visible-${key}`}
-                                            checked={(layout as CardLayout)[key]?.visible}
-                                            onCheckedChange={(checked) => onFieldVisibilityChange(key as LayoutKey, checked)}
-                                        />
-                                        <div className="flex flex-col">
-                                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => onMoveField(index, 'up')} disabled={index === 0}>
-                                                <ChevronUp className="h-4 w-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => onMoveField(index, 'down')} disabled={index === detailFieldsOrder.length - 1}>
-                                                <ChevronDown className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            )}
+        <Accordion type="multiple" className="w-full" defaultValue={['font-sizes', 'field-settings']}>
             <AccordionItem value="font-sizes">
                 <AccordionTrigger><Type className="mr-2 h-4 w-4" /> Font Sizes</AccordionTrigger>
                 <AccordionContent>
@@ -114,6 +95,104 @@ export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFi
                     ))}
                 </AccordionContent>
             </AccordionItem>
+             {cardType === 'front' && (
+              <AccordionItem value="highlights">
+                <AccordionTrigger><Palette className="mr-2 h-4 w-4" /> Highlights</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name-highlight-color">Name Highlight Color</Label>
+                    <Input id="name-highlight-color" type="color" value={frontLayout.name.highlightColor} onChange={(e) => onLayoutChange('name', { highlightColor: e.target.value })} className="h-8"/>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="class-highlight-color">Class Highlight Color</Label>
+                    <Input id="class-highlight-color" type="color" value={frontLayout.class.highlightColor} onChange={(e) => onLayoutChange('class', { highlightColor: e.target.value })} className="h-8"/>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
+            {cardType === 'front' && (
+              <AccordionItem value="alignment">
+                <AccordionTrigger><AlignHorizontalJustifyCenter className="mr-2 h-4 w-4" /> Text Alignment</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                   <div className="grid gap-2">
+                    <Label>Name Alignment</Label>
+                    <RadioGroup value={frontLayout.name.textAlign} onValueChange={(val) => handleAlignmentChange('name', val as any)} className="flex gap-2 pt-2">
+                      <div className="flex items-center space-x-1"><RadioGroupItem value="left" id="name-align-left" /><Label htmlFor="name-align-left">Left</Label></div>
+                      <div className="flex items-center space-x-1"><RadioGroupItem value="center" id="name-align-center" /><Label htmlFor="name-align-center">Center</Label></div>
+                      <div className="flex items-center space-x-1"><RadioGroupItem value="right" id="name-align-right" /><Label htmlFor="name-align-right">Right</Label></div>
+                    </RadioGroup>
+                  </div>
+                   <div className="grid gap-2">
+                    <Label>Details Alignment</Label>
+                    <RadioGroup value={frontLayout.detailsGroup.textAlign} onValueChange={(val) => handleAlignmentChange('detailsGroup', val as any)} className="flex gap-2 pt-2">
+                      <div className="flex items-center space-x-1"><RadioGroupItem value="left" id="details-align-left" /><Label htmlFor="details-align-left">Left</Label></div>
+                       <div className="flex items-center space-x-1"><RadioGroupItem value="center" id="details-align-center" /><Label htmlFor="details-align-center">Center</Label></div>
+                      <div className="flex items-center space-x-1"><RadioGroupItem value="right" id="details-align-right" /><Label htmlFor="details-align-right">Right</Label></div>
+                    </RadioGroup>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
+             {cardType === 'front' && (
+              <AccordionItem value="borders">
+                <AccordionTrigger><Square className="mr-2 h-4 w-4" /> Photo Border</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="photo-border-color">Border Color</Label>
+                    <Input id="photo-border-color" type="color" value={frontLayout.studentPhoto.borderColor} onChange={(e) => onLayoutChange('studentPhoto', { borderColor: e.target.value })} className="h-8"/>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="photo-border-width">Border Width: {frontLayout.studentPhoto.borderWidth}px</Label>
+                    <Slider id="photo-border-width" min={0} max={20} step={1} value={[frontLayout.studentPhoto.borderWidth]} onValueChange={(val) => handleSliderChange('studentPhoto', 'borderWidth', val)} />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
+            {cardType === 'front' && (
+              <AccordionItem value="spacing">
+                <AccordionTrigger><Indent className="mr-2 h-4 w-4" /> Spacing</AccordionTrigger>
+                <AccordionContent>
+                  <div className="grid gap-2">
+                    <Label htmlFor="details-line-height">Details Line Height: {frontLayout.detailsGroup.lineHeight.toFixed(1)}</Label>
+                    <Slider id="details-line-height" min={1} max={3} step={0.1} value={[frontLayout.detailsGroup.lineHeight]} onValueChange={handleLineHeightChange} />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
+            {cardType === 'front' && detailFieldsOrder && onFieldVisibilityChange && onMoveField && (
+                <AccordionItem value="field-settings">
+                    <AccordionTrigger><GripVertical className="mr-2 h-4 w-4" /> Field Settings</AccordionTrigger>
+                    <AccordionContent>
+                        <div className="space-y-2">
+                            <p className="text-sm text-muted-foreground pb-2">Toggle visibility and reorder fields.</p>
+                            {detailFieldsOrder.map((key, index) => (
+                                <div key={key} className="flex items-center justify-between p-2 border-b">
+                                    <Label htmlFor={`visible-${key}`} className="font-semibold text-sm">{humanReadableNames[key] || key}</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Switch
+                                            id={`visible-${key}`}
+                                            checked={(layout as CardLayout)[key]?.visible}
+                                            onCheckedChange={(checked) => onFieldVisibilityChange(key as LayoutKey, checked)}
+                                        />
+                                        <div className="flex flex-col">
+                                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => onMoveField(index, 'up')} disabled={index === 0}>
+                                                <ChevronUp className="h-4 w-4" />
+                                            </Button>
+                                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => onMoveField(index, 'down')} disabled={index === detailFieldsOrder.length - 1}>
+                                                <ChevronDown className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            )}
             <AccordionItem value="image-elements">
                 <AccordionTrigger><ImageIcon className="mr-2 h-4 w-4" /> Other Elements</AccordionTrigger>
                 <AccordionContent>

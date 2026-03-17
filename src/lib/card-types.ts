@@ -13,10 +13,22 @@ export interface FontLayout {
 }
 
 export interface CardLayout {
-  studentPhoto: ElementLayout;
-  name: ElementLayout & { valueFontSize: number };
-  detailsGroup: ElementLayout;
-  class: FontLayout;
+  studentPhoto: ElementLayout & {
+    borderColor: string;
+    borderWidth: number;
+  };
+  name: ElementLayout & {
+    valueFontSize: number;
+    highlightColor: string;
+    textAlign: 'left' | 'center' | 'right' | 'justify';
+  };
+  detailsGroup: ElementLayout & {
+    textAlign: 'left' | 'center' | 'right' | 'justify';
+    lineHeight: number;
+  };
+  class: FontLayout & {
+    highlightColor: string;
+  };
   rollNo: FontLayout;
   section: FontLayout;
   dob: FontLayout;

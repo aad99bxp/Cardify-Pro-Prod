@@ -19,8 +19,8 @@ interface CardPreviewProps {
   detailFieldsOrder?: (keyof CardLayout)[];
 }
 
-const CARD_ASPECT_RATIO = 1016 / 637; // height/width
-const PREVIEW_WIDTH = 382.2; // 60% of 637
+const CARD_ASPECT_RATIO = 86 / 54; // height/width
+const PREVIEW_WIDTH = 324; // 54mm * 6
 
 const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
   class: 'Class:',
@@ -69,7 +69,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
       const fontLayout = detailsLayout[key as keyof CardLayout] as FontLayout & { height?: number };
       if (!fontLayout.visible) return null;
 
-      const fieldHeight = (key === 'address' ? fontLayout.height! : 40) * scale;
+      const fieldHeight = ((key === 'address' ? fontLayout.height! : 40) * detailsLayout.detailsGroup.lineHeight) * scale;
       const value = data?.[key as keyof CardData] || `{${key}}`;
 
       const element = (
@@ -82,15 +82,16 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
             height: `${fieldHeight}px`,
             fontFamily: "'PT Sans', sans-serif",
             color: 'black',
-            alignItems: 'center',
-            ...(key === 'address' && { alignItems: 'flex-start' }),
-            ...(key === 'class' && { padding: '0 10%' })
+            alignItems: key === 'address' ? 'flex-start' : 'center',
           }}
         >
           <div className="w-full flex" style={{ 
             height: '100%', 
             alignItems: key === 'address' ? 'flex-start' : 'center',
-            ...(key === 'class' && { backgroundColor: '#ffde59', borderRadius: '8px' })
+            backgroundColor: key === 'class' ? (detailsLayout.class as any).highlightColor : 'transparent',
+            padding: key === 'class' ? `0 ${0.1 * detailsLayout.detailsGroup.width * scale}px` : '0',
+            borderRadius: key === 'class' ? '8px' : '0',
+            boxSizing: 'border-box'
           }}>
             <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px` }}>
               {fieldLabels[key as keyof typeof fieldLabels]}
@@ -117,13 +118,20 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
 
     if (key === 'detailsGroup') {
       content = (
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%', textAlign: elementLayout.textAlign }}>
           {renderDetailsGroup(scale)}
         </div>
       );
     } else if (key === 'name') {
       content = (
-        <div className="text-black w-full h-full flex items-center justify-center" style={{ ...headlineStyle, fontSize: `${elementLayout.valueFontSize * scale}px` }}>
+        <div className="text-black w-full h-full flex items-center justify-center" style={{ 
+            ...headlineStyle,
+            fontSize: `${elementLayout.valueFontSize * scale}px`,
+            backgroundColor: elementLayout.highlightColor,
+            textAlign: elementLayout.textAlign,
+            padding: '0 8px',
+            borderRadius: '8px',
+          }}>
           <strong>{data?.name || '{name}'}</strong>
         </div>
       );
@@ -137,7 +145,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
     } else {
       switch (key) {
         case 'studentPhoto':
-          content = <img src={convertDriveToLh3(data?.studentPhoto)} alt="Student" className="w-full h-full object-cover object-top rounded-2xl" />;
+          content = <img src={convertDriveToLh3(data?.studentPhoto)} alt="Student" className="w-full h-full object-cover object-top rounded-2xl" style={{ border: `${elementLayout.borderWidth * scale}px solid ${elementLayout.borderColor}`, boxSizing: 'border-box' }} />;
           break;
         case 'fatherPhoto':
           content = <img src={convertDriveToLh3(data?.fatherphoto)} alt="Father" className="w-full h-full object-cover rounded-2xl" />;
