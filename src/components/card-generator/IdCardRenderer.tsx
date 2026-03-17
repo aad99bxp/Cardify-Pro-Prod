@@ -78,14 +78,13 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
           top: `${yOffset}px`,
           width: '100%',
           height: `${fieldHeight}px`,
-          display: 'flex',
-          alignItems: key === 'address' ? 'flex-start' : 'center',
+          textAlign: frontLayout.detailsGroup.textAlign,
           ...bodyStyle,
         }}>
           <div style={{
             width: '100%',
             height: '100%',
-            display: 'flex',
+            display: 'inline-flex',
             alignItems: key === 'address' ? 'flex-start' : 'center',
             backgroundColor: key === 'class' ? (frontLayout.class as any).highlightColor : 'transparent',
             padding: key === 'class' ? `0 ${0.1 * frontLayout.detailsGroup.width}px` : '0',
@@ -147,7 +146,6 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
 
             if (key === 'detailsGroup') {
               baseStyle.display = 'block';
-              baseStyle.overflow = 'hidden';
               baseStyle.textAlign = elementLayout.textAlign;
               content = (
                 <div style={{ position: 'relative', width: '100%', height: '100%'}}>

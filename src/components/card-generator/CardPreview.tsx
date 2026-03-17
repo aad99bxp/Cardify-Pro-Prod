@@ -75,17 +75,17 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
       const element = (
         <div
           key={key}
-          className="w-full flex"
+          className="w-full"
           style={{
             position: 'absolute',
             top: `${yOffset}px`,
             height: `${fieldHeight}px`,
             fontFamily: "'PT Sans', sans-serif",
             color: 'black',
-            alignItems: key === 'address' ? 'flex-start' : 'center',
+            textAlign: detailsLayout.detailsGroup.textAlign,
           }}
         >
-          <div className="w-full flex" style={{ 
+          <div className="inline-flex w-full" style={{ 
             height: '100%', 
             alignItems: key === 'address' ? 'flex-start' : 'center',
             backgroundColor: key === 'class' ? (detailsLayout.class as any).highlightColor : 'transparent',
@@ -118,7 +118,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
 
     if (key === 'detailsGroup') {
       content = (
-        <div style={{ position: 'relative', width: '100%', height: '100%', textAlign: elementLayout.textAlign }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%'}}>
           {renderDetailsGroup(scale)}
         </div>
       );
@@ -189,7 +189,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
       <CardContent className="p-0">
         <div
           ref={containerRef}
-          className="relative bg-muted-foreground/20 overflow-hidden"
+          className="relative bg-muted-foreground/20"
           style={{
             width: `${PREVIEW_WIDTH}px`,
             height: `${PREVIEW_WIDTH * CARD_ASPECT_RATIO}px`,

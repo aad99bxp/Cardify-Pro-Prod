@@ -82,12 +82,12 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
         height: `${layout.height * scale}px`,
       }}
       className={cn(
-        "absolute border border-dashed border-primary/50 cursor-move flex items-center transition-all duration-75 ease-in-out",
+        "absolute border border-dashed border-primary/50 cursor-move transition-all duration-75 ease-in-out",
         (isDragging || isResizing) && "border-primary border-solid shadow-2xl z-10"
       )}
       onMouseDown={handleDragStart}
     >
-      <div className="w-full h-full overflow-hidden flex items-center">
+      <div className="w-full h-full">
         {children}
       </div>
       <div
