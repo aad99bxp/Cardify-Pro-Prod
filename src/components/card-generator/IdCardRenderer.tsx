@@ -102,51 +102,25 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
 
             if (detailKeys.includes(key as LayoutKey)) {
               const value = data[key as keyof CardData] || `{${key}}`;
+              baseStyle.justifyContent = elementLayout.textAlign;
               
-              if (elementLayout.textAlign === 'center') {
-                baseStyle.justifyContent = 'center';
-                content = (
-                  <div style={{
+              content = (
+                <div style={{
                     ...bodyStyle,
                     display: 'inline-flex',
                     alignItems: key === 'address' ? 'flex-start' : 'center',
                     backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
                     padding: key === 'class' ? `0 8px` : '0',
                     borderRadius: key === 'class' ? '12px' : '0',
-                  }}>
+                }}>
                     <div style={{ fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap', fontWeight: 'bold', paddingRight: '0.5rem' }}>
-                      {fieldLabels[key as keyof typeof fieldLabels]}
+                        {fieldLabels[key as keyof typeof fieldLabels]}
                     </div>
                     <div style={{ fontSize: `${elementLayout.valueFontSize}px` }}>
-                      {value}
+                        {value}
                     </div>
-                  </div>
-                );
-              } else {
-                 baseStyle.justifyContent = elementLayout.textAlign;
-                content = (
-                    <div style={{
-                        ...bodyStyle,
-                        display: 'inline-flex',
-                        width: 'auto',
-                        alignItems: key === 'address' ? 'flex-start' : 'center',
-                    }}>
-                        <div style={{
-                            backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
-                            padding: key === 'class' ? `0 8px` : '0',
-                            borderRadius: key === 'class' ? '12px' : '0',
-                            display: 'flex',
-                        }}>
-                            <div style={{ width: '50%', textAlign: 'right', fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap', fontWeight: 'bold', paddingRight: '0.5rem' }}>
-                                {fieldLabels[key as keyof typeof fieldLabels]}
-                            </div>
-                            <div style={{ width: '50%', textAlign: 'left', fontSize: `${elementLayout.valueFontSize}px`, paddingLeft: '0.5rem' }}>
-                                {value}
-                            </div>
-                        </div>
-                    </div>
-                );
-              }
+                </div>
+              );
             } else if (key === 'name') {
                 baseStyle.alignItems = 'center';
                 baseStyle.justifyContent = elementLayout.textAlign;

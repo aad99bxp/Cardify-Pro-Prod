@@ -76,53 +76,28 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
 
     if (detailKeys.includes(key as LayoutKey)) {
         const value = data?.[key as keyof CardData] || `{${key}}`;
-        
-        if (elementLayout.textAlign === 'center') {
-          content = (
-            <div className="flex w-full h-full items-center justify-center" style={{ ...bodyStyle }}>
-              <div className="inline-flex" style={{
-                  alignItems: key === 'address' ? 'flex-start' : 'center',
-                  backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
-                  padding: key === 'class' ? `0 ${8 * scale}px` : '0',
-                  borderRadius: key === 'class' ? '8px' : '0',
-              }}>
-                <div className="font-bold pr-2" style={{ fontSize: `${elementLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
-                  {fieldLabels[key as keyof typeof fieldLabels]}
-                </div>
-                <div style={{ fontSize: `${elementLayout.valueFontSize * scale}px` }}>
-                  {value}
-                </div>
+        content = (
+          <div className="flex w-full h-full" style={{
+              ...bodyStyle,
+              alignItems: 'center',
+              justifyContent: elementLayout.textAlign
+          }}>
+            <div style={{
+                display: 'inline-flex',
+                alignItems: key === 'address' ? 'flex-start' : 'center',
+                backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
+                padding: key === 'class' ? `0 ${8 * scale}px` : '0',
+                borderRadius: key === 'class' ? '8px' : '0',
+            }}>
+              <div className="font-bold pr-2" style={{ fontSize: `${elementLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
+                {fieldLabels[key as keyof typeof fieldLabels]}
+              </div>
+              <div style={{ fontSize: `${elementLayout.valueFontSize * scale}px` }}>
+                {value}
               </div>
             </div>
-          );
-        } else {
-          content = (
-            <div className="flex w-full h-full" style={{
-                ...bodyStyle,
-                alignItems: key === 'address' ? 'flex-start' : 'center',
-              }}>
-                <div className="flex w-full" style={{
-                    alignItems: key === 'address' ? 'flex-start' : 'center',
-                    justifyContent: elementLayout.textAlign,
-                }}>
-                  <div className="flex w-full" style={{
-                      backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
-                      padding: key === 'class' ? `0 ${8 * scale}px` : '0',
-                      borderRadius: key === 'class' ? '8px' : '0',
-                      display: 'inline-flex',
-                      alignItems: key === 'address' ? 'flex-start' : 'center',
-                  }}>
-                    <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${elementLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
-                      {fieldLabels[key as keyof typeof fieldLabels]}
-                    </div>
-                    <div className="w-1/2 text-left pl-2" style={{ fontSize: `${elementLayout.valueFontSize * scale}px` }}>
-                      {value}
-                    </div>
-                  </div>
-                </div>
-            </div>
-          );
-        }
+          </div>
+        );
     } else if (key === 'name') {
       content = (
         <div className="flex items-center w-full h-full" style={{ 
