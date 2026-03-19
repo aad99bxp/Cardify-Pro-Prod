@@ -94,35 +94,59 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 height: `${elementLayout.height}px`,
                 display: 'flex',
                 color: 'black',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                alignItems: 'center',
+                overflow: 'hidden',
             };
 
             let content;
 
             if (detailKeys.includes(key as LayoutKey)) {
               const value = data[key as keyof CardData] || `{${key}}`;
-              baseStyle.alignItems = key === 'address' ? 'flex-start' : 'center';
-              baseStyle.justifyContent = elementLayout.textAlign === 'left' ? 'flex-start' : elementLayout.textAlign === 'right' ? 'flex-end' : 'center';
-
-              content = (
-                <div className="inline-flex" style={{
+              
+              if (elementLayout.textAlign === 'center') {
+                baseStyle.justifyContent = 'center';
+                content = (
+                  <div style={{
                     ...bodyStyle,
+                    display: 'inline-flex',
                     alignItems: key === 'address' ? 'flex-start' : 'center',
                     backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
                     padding: key === 'class' ? `0 8px` : '0',
                     borderRadius: key === 'class' ? '12px' : '0',
-                }}>
-                  <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap' }}>
-                    {fieldLabels[key as keyof typeof fieldLabels]}
+                  }}>
+                    <div style={{ fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap', fontWeight: 'bold', paddingRight: '0.5rem' }}>
+                      {fieldLabels[key as keyof typeof fieldLabels]}
+                    </div>
+                    <div style={{ fontSize: `${elementLayout.valueFontSize}px` }}>
+                      {value}
+                    </div>
                   </div>
-                  <div className="w-1/2 text-left pl-2" style={{ fontSize: `${elementLayout.valueFontSize}px` }}>
-                    {value}
+                );
+              } else {
+                baseStyle.justifyContent = elementLayout.textAlign;
+                content = (
+                  <div style={{
+                      ...bodyStyle,
+                      display: 'flex',
+                      width: '100%',
+                      alignItems: key === 'address' ? 'flex-start' : 'center',
+                      backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
+                      padding: key === 'class' ? `0 8px` : '0',
+                      borderRadius: key === 'class' ? '12px' : '0',
+                  }}>
+                    <div style={{ width: '50%', textAlign: 'right', fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap', fontWeight: 'bold', paddingRight: '0.5rem' }}>
+                      {fieldLabels[key as keyof typeof fieldLabels]}
+                    </div>
+                    <div style={{ width: '50%', textAlign: 'left', fontSize: `${elementLayout.valueFontSize}px`, paddingLeft: '0.5rem' }}>
+                      {value}
+                    </div>
                   </div>
-                </div>
-              );
+                );
+              }
             } else if (key === 'name') {
                 baseStyle.alignItems = 'center';
-                baseStyle.justifyContent = elementLayout.textAlign === 'left' ? 'flex-start' : elementLayout.textAlign === 'right' ? 'flex-end' : 'center';
+                baseStyle.justifyContent = elementLayout.textAlign;
                 baseStyle.color = elementLayout.textColor;
                 
                 content = (

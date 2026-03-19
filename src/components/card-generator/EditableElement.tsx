@@ -72,12 +72,15 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
         const widthChange = direction.includes('left') ? -dx : dx;
         const heightChange = direction.includes('top') ? -dy : dy;
         
+        let newSize;
         if (Math.abs(widthChange) > Math.abs(heightChange)) {
-          newWidth = startLayout.width + widthChange;
-          newHeight = newWidth / originalAspectRatio;
+          newSize = startLayout.width + widthChange;
+          newWidth = newSize;
+          newHeight = newSize / originalAspectRatio;
         } else {
-          newHeight = startLayout.height + heightChange;
-          newWidth = newHeight * originalAspectRatio;
+          newSize = startLayout.height + heightChange;
+          newHeight = newSize;
+          newWidth = newSize * originalAspectRatio;
         }
       } else { // Side handles
         if (direction === 'right') {
@@ -160,7 +163,7 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
       )}
       onMouseDown={handleDragStart}
     >
-      <div className="w-full h-full relative">
+      <div className="w-full h-full relative overflow-hidden">
         {children}
       </div>
       {handles.map(handle => (
