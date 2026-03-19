@@ -19,7 +19,7 @@ interface CardPreviewProps {
   detailFieldsOrder?: (keyof CardLayout)[];
 }
 
-const CARD_ASPECT_RATIO = 1016 / 637;
+const CARD_ASPECT_RATIO = 1013 / 637;
 const PREVIEW_WIDTH = 324;
 
 const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
@@ -104,11 +104,14 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
                 <div className="flex w-full" style={{
                     alignItems: key === 'address' ? 'flex-start' : 'center',
                     justifyContent: elementLayout.textAlign,
-                    backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
-                    padding: key === 'class' ? `0 ${8 * scale}px` : '0',
-                    borderRadius: key === 'class' ? '8px' : '0',
                 }}>
-                  <div className="flex w-full">
+                  <div className="flex w-full" style={{
+                      backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
+                      padding: key === 'class' ? `0 ${8 * scale}px` : '0',
+                      borderRadius: key === 'class' ? '8px' : '0',
+                      display: 'inline-flex',
+                      alignItems: key === 'address' ? 'flex-start' : 'center',
+                  }}>
                     <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${elementLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
                       {fieldLabels[key as keyof typeof fieldLabels]}
                     </div>
@@ -172,7 +175,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
           scale={scale}
           containerRef={containerRef}
         >
-          <div className="w-full h-full overflow-hidden">
+          <div className="w-full h-full">
             {content}
           </div>
         </EditableElement>

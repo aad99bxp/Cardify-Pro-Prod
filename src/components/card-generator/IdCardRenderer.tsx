@@ -71,7 +71,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
       ref={ref}
       style={{
         width: '637px',
-        height: '1016px',
+        height: '1013px',
         fontFamily: "'PT Sans', sans-serif",
         color: '#333'
       }}
@@ -96,7 +96,6 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                 color: 'black',
                 boxSizing: 'border-box',
                 alignItems: 'center',
-                overflow: 'hidden',
             };
 
             let content;
@@ -124,24 +123,28 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
                   </div>
                 );
               } else {
-                baseStyle.justifyContent = elementLayout.textAlign;
+                 baseStyle.justifyContent = elementLayout.textAlign;
                 content = (
-                  <div style={{
-                      ...bodyStyle,
-                      display: 'flex',
-                      width: '100%',
-                      alignItems: key === 'address' ? 'flex-start' : 'center',
-                      backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
-                      padding: key === 'class' ? `0 8px` : '0',
-                      borderRadius: key === 'class' ? '12px' : '0',
-                  }}>
-                    <div style={{ width: '50%', textAlign: 'right', fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap', fontWeight: 'bold', paddingRight: '0.5rem' }}>
-                      {fieldLabels[key as keyof typeof fieldLabels]}
+                    <div style={{
+                        ...bodyStyle,
+                        display: 'inline-flex',
+                        width: 'auto',
+                        alignItems: key === 'address' ? 'flex-start' : 'center',
+                    }}>
+                        <div style={{
+                            backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
+                            padding: key === 'class' ? `0 8px` : '0',
+                            borderRadius: key === 'class' ? '12px' : '0',
+                            display: 'flex',
+                        }}>
+                            <div style={{ width: '50%', textAlign: 'right', fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap', fontWeight: 'bold', paddingRight: '0.5rem' }}>
+                                {fieldLabels[key as keyof typeof fieldLabels]}
+                            </div>
+                            <div style={{ width: '50%', textAlign: 'left', fontSize: `${elementLayout.valueFontSize}px`, paddingLeft: '0.5rem' }}>
+                                {value}
+                            </div>
+                        </div>
                     </div>
-                    <div style={{ width: '50%', textAlign: 'left', fontSize: `${elementLayout.valueFontSize}px`, paddingLeft: '0.5rem' }}>
-                      {value}
-                    </div>
-                  </div>
                 );
               }
             } else if (key === 'name') {

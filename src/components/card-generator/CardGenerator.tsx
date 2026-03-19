@@ -151,7 +151,7 @@ export function CardGenerator() {
 
     const imageOptions = {
       width: 637,
-      height: 1016,
+      height: 1013,
       pixelRatio: 2, // Increase for better quality
       fontEmbedCSS: fontCSS,
       fetchRequestInit: { mode: 'cors' as RequestMode, cache: 'default' as RequestCache }
@@ -240,7 +240,7 @@ export function CardGenerator() {
             </div>
         )}
       </main>
-      <div style={{ position: 'absolute', top: '-2000px', left: 0, zIndex: -100, opacity: 1, pointerEvents: 'none', width: '637px', height: '1016px' }}>
+      <div style={{ position: 'absolute', top: '-2000px', left: 0, zIndex: -100, opacity: 1, pointerEvents: 'none', width: '637px', height: '1013px' }}>
         <IdCardRenderer ref={frontRendererRef} cardType="front" bg={frontBg} layout={layout.front} data={firstRowData} detailFieldsOrder={detailFieldsOrder} />
         <IdCardRenderer ref={backRendererRef} cardType="back" bg={backBg} layout={layout.back} data={firstRowData} />
       </div>
