@@ -9,7 +9,10 @@ export interface ElementLayout {
 export interface FontLayout {
   valueFontSize: number;
   labelFontSize: number;
-  visible: boolean;
+}
+
+export interface TextElementLayout extends ElementLayout, FontLayout {
+  textAlign: 'left' | 'center' | 'right';
 }
 
 export interface CardLayout {
@@ -17,27 +20,21 @@ export interface CardLayout {
     borderColor: string;
     borderWidth: number;
   };
-  name: ElementLayout & {
-    valueFontSize: number;
+  name: TextElementLayout & {
     highlightColor: string;
-    textAlign: 'left' | 'center' | 'right' | 'justify';
     textColor: string;
   };
-  detailsGroup: ElementLayout & {
-    textAlign: 'left' | 'center' | 'right' | 'justify';
-    lineHeight: number;
-  };
-  class: FontLayout & {
+  class: TextElementLayout & {
     highlightColor: string;
   };
-  rollNo: FontLayout;
-  section: FontLayout;
-  dob: FontLayout;
-  fatherName: FontLayout;
-  motherName: FontLayout;
-  admissionNo: FontLayout;
-  contact: FontLayout;
-  address: FontLayout & { height: number };
+  rollNo: TextElementLayout;
+  section: TextElementLayout;
+  dob: TextElementLayout;
+  fatherName: TextElementLayout;
+  motherName: TextElementLayout;
+  admissionNo: TextElementLayout;
+  contact: TextElementLayout;
+  address: TextElementLayout;
 }
 
 export interface BackCardLayout {

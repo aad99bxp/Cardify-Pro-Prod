@@ -21,18 +21,17 @@ const initialDetailFields: (keyof CardLayout)[] = [
 
 const initialLayout: Layout = {
   front: {
-    studentPhoto: { x: 194, y: 148, width: 250, height: 250, visible: true, borderColor: '#000000', borderWidth: 0 },
+    studentPhoto: { x: 194, y: 148, width: 250, height: 250, visible: true, borderColor: '#000000', borderWidth: 2 },
     name: { x: 20, y: 420, width: 597, height: 60, valueFontSize: 40, visible: true, highlightColor: '#ffffff', textAlign: 'center', textColor: '#000000' },
-    detailsGroup: { x: 120, y: 520, width: 400, height: 360, visible: true, textAlign: 'left', lineHeight: 1.5 },
-    class: { labelFontSize: 24, valueFontSize: 24, visible: true, highlightColor: '#ffde59' },
-    rollNo: { labelFontSize: 24, valueFontSize: 24, visible: true },
-    section: { labelFontSize: 24, valueFontSize: 24, visible: true },
-    dob: { labelFontSize: 24, valueFontSize: 24, visible: true },
-    fatherName: { labelFontSize: 24, valueFontSize: 24, visible: true },
-    motherName: { labelFontSize: 24, valueFontSize: 24, visible: true },
-    admissionNo: { labelFontSize: 24, valueFontSize: 24, visible: true },
-    contact: { labelFontSize: 24, valueFontSize: 24, visible: true },
-    address: { labelFontSize: 24, valueFontSize: 24, visible: true, height: 80 },
+    class: { x: 120, y: 500, width: 400, height: 30, visible: true, labelFontSize: 24, valueFontSize: 24, highlightColor: '#ffde59', textAlign: 'left' },
+    rollNo: { x: 120, y: 530, width: 400, height: 30, visible: true, labelFontSize: 24, valueFontSize: 24, textAlign: 'left' },
+    section: { x: 120, y: 560, width: 400, height: 30, visible: true, labelFontSize: 24, valueFontSize: 24, textAlign: 'left' },
+    dob: { x: 120, y: 590, width: 400, height: 30, visible: true, labelFontSize: 24, valueFontSize: 24, textAlign: 'left' },
+    fatherName: { x: 120, y: 620, width: 400, height: 30, visible: true, labelFontSize: 24, valueFontSize: 24, textAlign: 'left' },
+    motherName: { x: 120, y: 650, width: 400, height: 30, visible: true, labelFontSize: 24, valueFontSize: 24, textAlign: 'left' },
+    admissionNo: { x: 120, y: 680, width: 400, height: 30, visible: true, labelFontSize: 24, valueFontSize: 24, textAlign: 'left' },
+    contact: { x: 120, y: 710, width: 400, height: 30, visible: true, labelFontSize: 24, valueFontSize: 24, textAlign: 'left' },
+    address: { x: 120, y: 740, width: 400, height: 60, visible: true, labelFontSize: 24, valueFontSize: 24, textAlign: 'left' },
   },
   back: {
     fatherPhoto: { x: 34, y: 250, width: 250, height: 250, visible: true },

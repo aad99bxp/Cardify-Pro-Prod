@@ -2,7 +2,7 @@
 "use client";
 
 import React, { forwardRef, useEffect, useState } from 'react';
-import type { CardData, CardLayout, BackCardLayout, LayoutKey, BackLayoutKey, FontLayout } from '@/lib/card-types';
+import type { CardData, CardLayout, BackCardLayout, LayoutKey, BackLayoutKey } from '@/lib/card-types';
 import QRCode from 'qrcode';
 
 interface IdCardRendererProps {
@@ -35,14 +35,15 @@ const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
   address: 'Address:',
 };
 
-const positionableElementKeys = ['studentPhoto', 'name', 'detailsGroup', 'fatherPhoto', 'motherPhoto', 'qrCode', 'username'];
+const positionableElementKeys: (LayoutKey|BackLayoutKey)[] = [
+  'studentPhoto', 'name', 'class', 'rollNo', 'section', 'dob', 'fatherName', 'motherName', 'admissionNo', 'contact', 'address', 'fatherPhoto', 'motherPhoto', 'qrCode', 'username'
+];
+const detailKeys: (LayoutKey)[] = ['class', 'rollNo', 'section', 'dob', 'fatherName', 'motherName', 'admissionNo', 'contact', 'address'];
 
 
 const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
-  ({ cardType, bg, layout, data, detailFieldsOrder }, ref) => {
+  ({ cardType, bg, layout, data }, ref) => {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
-  const frontLayout = layout as CardLayout;
-
 
   useEffect(() => {
     if (data?.qrCode) {
@@ -61,58 +62,8 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
   const headlineStyle: React.CSSProperties = { fontFamily: "'Poppins', sans-serif" };
   const bodyStyle: React.CSSProperties = { fontFamily: "'PT Sans', sans-serif" };
 
-  const renderDetailsGroup = () => {
-    if (!detailFieldsOrder) return null;
-    let yOffset = 0;
-
-    return detailFieldsOrder.map(key => {
-      const fontLayout = frontLayout[key as keyof CardLayout] as FontLayout & { height?: number };
-      if (!fontLayout.visible) return null;
-
-      const fieldHeight = (key === 'address' ? fontLayout.height! : 40) * frontLayout.detailsGroup.lineHeight;
-      const value = data[key as keyof CardData] || `{${key}}`;
-
-      const element = (
-        <div key={key} style={{
-          position: 'absolute',
-          top: `${yOffset}px`,
-          width: '100%',
-          height: `${fieldHeight}px`,
-          textAlign: frontLayout.detailsGroup.textAlign,
-          ...bodyStyle,
-        }}>
-          <div style={{
-            display: 'inline-flex',
-            height: '100%',
-            alignItems: key === 'address' ? 'flex-start' : 'center',
-          }}>
-            <div style={{
-                display: 'flex',
-                height: '100%',
-                alignItems: key === 'address' ? 'flex-start' : 'center',
-                backgroundColor: key === 'class' ? (frontLayout.class as any).highlightColor : 'transparent',
-                padding: key === 'class' ? '0 8px' : '0',
-                borderRadius: key === 'class' ? '12px' : '0',
-                boxSizing: 'border-box'
-            }}>
-                <div style={{ width: '50%', textAlign: 'right', paddingRight: '8px', fontWeight: 'bold', fontSize: `${fontLayout.labelFontSize}px`, whiteSpace: 'nowrap' }}>
-                  {fieldLabels[key as keyof typeof fieldLabels]}
-                </div>
-                <div style={{ width: '50%', textAlign: 'left', paddingLeft: '8px', fontSize: `${fontLayout.valueFontSize}px` }}>
-                  {value}
-                </div>
-            </div>
-          </div>
-        </div>
-      );
-
-      yOffset += fieldHeight;
-      return element;
-    });
-  };
-
   const filteredLayout = Object.fromEntries(
-    Object.entries(layout).filter(([key]) => positionableElementKeys.includes(key))
+    Object.entries(layout).filter(([key]) => positionableElementKeys.includes(key as any))
   );
 
   return (
@@ -148,12 +99,25 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
 
             let content;
 
-            if (key === 'detailsGroup') {
-              baseStyle.display = 'block';
-              baseStyle.textAlign = 'left';
+            if (detailKeys.includes(key as LayoutKey)) {
+              const value = data[key as keyof CardData] || `{${key}}`;
+              baseStyle.alignItems = key === 'address' ? 'flex-start' : 'center';
+              baseStyle.justifyContent = elementLayout.textAlign === 'left' ? 'flex-start' : elementLayout.textAlign === 'right' ? 'flex-end' : 'center';
+
               content = (
-                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden'}}>
-                  {renderDetailsGroup()}
+                <div className="inline-flex" style={{
+                    ...bodyStyle,
+                    alignItems: key === 'address' ? 'flex-start' : 'center',
+                    backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
+                    padding: key === 'class' ? `0 8px` : '0',
+                    borderRadius: key === 'class' ? '12px' : '0',
+                }}>
+                  <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap' }}>
+                    {fieldLabels[key as keyof typeof fieldLabels]}
+                  </div>
+                  <div className="w-1/2 text-left pl-2" style={{ fontSize: `${elementLayout.valueFontSize}px` }}>
+                    {value}
+                  </div>
                 </div>
               );
             } else if (key === 'name') {

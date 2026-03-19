@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { CardLayout, BackCardLayout, ElementLayout, LayoutKey, BackLayoutKey } from '@/lib/card-types';
-import { Type, Image as ImageIcon, GripVertical, ChevronUp, ChevronDown, Palette, AlignHorizontalJustifyCenter, Square, Indent } from 'lucide-react';
+import { Type, Image as ImageIcon, GripVertical, ChevronUp, ChevronDown, Palette, AlignHorizontalJustifyCenter, Square } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 
@@ -42,19 +42,15 @@ const humanReadableNames: Record<string, string> = {
 
 
 export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFieldsOrder, onFieldVisibilityChange, onMoveField }: LayoutControlsPanelProps) {
-  const textElements = Object.entries(layout).filter(([_, v]) => v.valueFontSize);
+  const textElements = Object.entries(layout).filter(([_, v]) => 'valueFontSize' in v);
   const frontLayout = layout as CardLayout;
 
   const handleSliderChange = (key: LayoutKey | BackLayoutKey, property: 'labelFontSize' | 'valueFontSize' | 'borderWidth', value: number[]) => {
     onLayoutChange(key, { [property]: value[0] });
   };
   
-  const handleAlignmentChange = (key: 'name' | 'detailsGroup', value: 'left' | 'center' | 'right' | 'justify') => {
+  const handleAlignmentChange = (key: LayoutKey, value: 'left' | 'center' | 'right') => {
     if(value) onLayoutChange(key, { textAlign: value });
-  };
-
-  const handleLineHeightChange = (value: number[]) => {
-    onLayoutChange('detailsGroup', { lineHeight: value[0] });
   };
   
   return (
@@ -63,14 +59,14 @@ export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFi
         <CardTitle className="text-xl">Layout Controls</CardTitle>
       </CardHeader>
       <CardContent>
-        <Accordion type="multiple" className="w-full" defaultValue={['font-sizes', 'field-settings']}>
-            <AccordionItem value="font-sizes">
-                <AccordionTrigger><Type className="mr-2 h-4 w-4" /> Font Sizes</AccordionTrigger>
+        <Accordion type="multiple" className="w-full" defaultValue={['text-elements', 'field-settings']}>
+            <AccordionItem value="text-elements">
+                <AccordionTrigger><Type className="mr-2 h-4 w-4" /> Text Elements</AccordionTrigger>
                 <AccordionContent>
                     {textElements.map(([key, elementLayout]) => (
                         <div key={key} className="mb-4 p-2 border-b">
                             <h4 className="font-semibold mb-3">{humanReadableNames[key] || key}</h4>
-                             {elementLayout.labelFontSize && (
+                             {'labelFontSize' in elementLayout && elementLayout.labelFontSize && (
                                 <div className="grid gap-2 mb-3">
                                     <Label htmlFor={`${key}-label-size`}>Label Size: {elementLayout.labelFontSize}px</Label>
                                     <Slider
@@ -81,7 +77,7 @@ export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFi
                                     />
                                 </div>
                             )}
-                            {elementLayout.valueFontSize && (
+                            {'valueFontSize' in elementLayout && elementLayout.valueFontSize && (
                                 <div className="grid gap-2">
                                     <Label htmlFor={`${key}-value-size`}>Value Size: {elementLayout.valueFontSize}px</Label>
                                     <Slider
@@ -92,10 +88,21 @@ export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFi
                                     />
                                 </div>
                             )}
+                            {'textAlign' in elementLayout && (
+                              <div className="grid gap-2 mt-3">
+                                <Label>Alignment</Label>
+                                <RadioGroup value={elementLayout.textAlign} onValueChange={(val) => handleAlignmentChange(key as any, val as any)} className="flex gap-2 pt-2">
+                                  <div className="flex items-center space-x-1"><RadioGroupItem value="left" id={`${key}-align-left`} /><Label htmlFor={`${key}-align-left`}>Left</Label></div>
+                                  <div className="flex items-center space-x-1"><RadioGroupItem value="center" id={`${key}-align-center`} /><Label htmlFor={`${key}-align-center`}>Center</Label></div>
+                                  <div className="flex items-center space-x-1"><RadioGroupItem value="right" id={`${key}-align-right`} /><Label htmlFor={`${key}-align-right`}>Right</Label></div>
+                                </RadioGroup>
+                              </div>
+                            )}
                         </div>
                     ))}
                 </AccordionContent>
             </AccordionItem>
+
              {cardType === 'front' && (
               <AccordionItem value="highlights">
                 <AccordionTrigger><Palette className="mr-2 h-4 w-4" /> Highlights & Colors</AccordionTrigger>
@@ -117,30 +124,6 @@ export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFi
             )}
 
             {cardType === 'front' && (
-              <AccordionItem value="alignment">
-                <AccordionTrigger><AlignHorizontalJustifyCenter className="mr-2 h-4 w-4" /> Text Alignment</AccordionTrigger>
-                <AccordionContent className="space-y-4">
-                   <div className="grid gap-2">
-                    <Label>Name Alignment</Label>
-                    <RadioGroup value={frontLayout.name.textAlign} onValueChange={(val) => handleAlignmentChange('name', val as any)} className="flex gap-2 pt-2">
-                      <div className="flex items-center space-x-1"><RadioGroupItem value="left" id="name-align-left" /><Label htmlFor="name-align-left">Left</Label></div>
-                      <div className="flex items-center space-x-1"><RadioGroupItem value="center" id="name-align-center" /><Label htmlFor="name-align-center">Center</Label></div>
-                      <div className="flex items-center space-x-1"><RadioGroupItem value="right" id="name-align-right" /><Label htmlFor="name-align-right">Right</Label></div>
-                    </RadioGroup>
-                  </div>
-                   <div className="grid gap-2">
-                    <Label>Details Alignment</Label>
-                    <RadioGroup value={frontLayout.detailsGroup.textAlign} onValueChange={(val) => handleAlignmentChange('detailsGroup', val as any)} className="flex gap-2 pt-2">
-                      <div className="flex items-center space-x-1"><RadioGroupItem value="left" id="details-align-left" /><Label htmlFor="details-align-left">Left</Label></div>
-                       <div className="flex items-center space-x-1"><RadioGroupItem value="center" id="details-align-center" /><Label htmlFor="details-align-center">Center</Label></div>
-                      <div className="flex items-center space-x-1"><RadioGroupItem value="right" id="details-align-right" /><Label htmlFor="details-align-right">Right</Label></div>
-                    </RadioGroup>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            )}
-
-             {cardType === 'front' && (
               <AccordionItem value="borders">
                 <AccordionTrigger><Square className="mr-2 h-4 w-4" /> Photo Border</AccordionTrigger>
                 <AccordionContent className="space-y-4">
@@ -151,18 +134,6 @@ export function LayoutControlsPanel({ cardType, layout, onLayoutChange, detailFi
                   <div className="grid gap-2">
                     <Label htmlFor="photo-border-width">Border Width: {frontLayout.studentPhoto.borderWidth}px</Label>
                     <Slider id="photo-border-width" min={0} max={20} step={1} value={[frontLayout.studentPhoto.borderWidth]} onValueChange={(val) => handleSliderChange('studentPhoto', 'borderWidth', val)} />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            )}
-
-            {cardType === 'front' && (
-              <AccordionItem value="spacing">
-                <AccordionTrigger><Indent className="mr-2 h-4 w-4" /> Spacing</AccordionTrigger>
-                <AccordionContent>
-                  <div className="grid gap-2">
-                    <Label htmlFor="details-line-height">Details Line Height: {frontLayout.detailsGroup.lineHeight.toFixed(1)}</Label>
-                    <Slider id="details-line-height" min={1} max={3} step={0.1} value={[frontLayout.detailsGroup.lineHeight]} onValueChange={handleLineHeightChange} />
                   </div>
                 </AccordionContent>
               </AccordionItem>

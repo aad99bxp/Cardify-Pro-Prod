@@ -1,3 +1,4 @@
+
 "use client";
 
 import { CardPreview } from './CardPreview';
@@ -33,7 +34,6 @@ export function EditorPanel({ frontBg, backBg, layout, onLayoutChange, data, det
               onLayoutChange={(key, newLayout) => onLayoutChange('front', key as LayoutKey, newLayout)}
               data={data}
               cardType="front"
-              detailFieldsOrder={detailFieldsOrder}
             />
             <LayoutControlsPanel 
               cardType="front"

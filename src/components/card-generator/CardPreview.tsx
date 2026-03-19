@@ -4,7 +4,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { EditableElement } from './EditableElement';
 import { CardContent, Card } from '@/components/ui/card';
-import type { CardLayout, BackCardLayout, ElementLayout, LayoutKey, BackLayoutKey, CardData, FontLayout } from '@/lib/card-types';
+import type { CardLayout, BackCardLayout, ElementLayout, LayoutKey, BackLayoutKey, CardData } from '@/lib/card-types';
 import { ImageIcon } from 'lucide-react';
 import QRCode from 'qrcode';
 
@@ -34,9 +34,13 @@ const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
   address: 'Address:',
 };
 
-const positionableElementKeys = ['studentPhoto', 'name', 'detailsGroup', 'fatherPhoto', 'motherPhoto', 'qrCode', 'username'];
+const positionableElementKeys: (LayoutKey | BackLayoutKey)[] = [
+  'studentPhoto', 'name', 'class', 'rollNo', 'section', 'dob', 'fatherName', 'motherName', 'admissionNo', 'contact', 'address', 'fatherPhoto', 'motherPhoto', 'qrCode', 'username'
+];
+const detailKeys: (LayoutKey)[] = ['class', 'rollNo', 'section', 'dob', 'fatherName', 'motherName', 'admissionNo', 'contact', 'address'];
 
-export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, detailFieldsOrder }: CardPreviewProps) {
+
+export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: CardPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
@@ -60,77 +64,43 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
     }
   }, [data, cardType]);
 
-  const renderDetailsGroup = (scale: number) => {
-    if (!detailFieldsOrder) return null;
-    const detailsLayout = layout as CardLayout;
-    let yOffset = 0;
-
-    return detailFieldsOrder.map(key => {
-      const fontLayout = detailsLayout[key as keyof CardLayout] as FontLayout & { height?: number };
-      if (!fontLayout.visible) return null;
-
-      const fieldHeight = ((key === 'address' ? fontLayout.height! : 40) * detailsLayout.detailsGroup.lineHeight) * scale;
-      const value = data?.[key as keyof CardData] || `{${key}}`;
-
-      const element = (
-        <div
-          key={key}
-          style={{
-            position: 'absolute',
-            top: `${yOffset}px`,
-            width: '100%',
-            height: `${fieldHeight}px`,
-            fontFamily: "'PT Sans', sans-serif",
-            color: 'black',
-            textAlign: detailsLayout.detailsGroup.textAlign,
-          }}
-        >
-          <div className="inline-flex" style={{ height: '100%', alignItems: key === 'address' ? 'flex-start' : 'center' }}>
-            <div style={{
-              display: 'flex',
-              height: '100%',
-              alignItems: key === 'address' ? 'flex-start' : 'center',
-              backgroundColor: key === 'class' ? (detailsLayout.class as any).highlightColor : 'transparent',
-              padding: key === 'class' ? `0 ${8 * scale}px` : '0',
-              borderRadius: key === 'class' ? '8px' : '0',
-              boxSizing: 'border-box',
-            }}>
-              <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${fontLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
-                {fieldLabels[key as keyof typeof fieldLabels]}
-              </div>
-              <div className="w-1/2 text-left pl-2" style={{ fontSize: `${fontLayout.valueFontSize * scale}px` }}>
-                {value}
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-      yOffset += fieldHeight;
-      return element;
-    });
-  };
-
   const renderElement = (key: LayoutKey | BackLayoutKey, elementLayout: any) => {
     if (!elementLayout.visible) return null;
 
     let content: React.ReactNode;
     const scale = PREVIEW_WIDTH / 637;
     const headlineStyle = { fontFamily: "'Poppins', sans-serif" };
+    const bodyStyle = { fontFamily: "'PT Sans', sans-serif" };
     
-    const isEditable = positionableElementKeys.includes(key as string);
+    const isEditable = positionableElementKeys.includes(key as any);
 
-    if (key === 'detailsGroup') {
-      content = (
-        <div style={{ position: 'relative', width: '100%', height: '100%'}}>
-          {renderDetailsGroup(scale)}
-        </div>
-      );
+    if (detailKeys.includes(key as LayoutKey)) {
+        const value = data?.[key as keyof CardData] || `{${key}}`;
+        content = (
+          <div className="flex w-full h-full" style={{
+              ...bodyStyle,
+              alignItems: key === 'address' ? 'flex-start' : 'center',
+              justifyContent: elementLayout.textAlign === 'left' ? 'flex-start' : elementLayout.textAlign === 'right' ? 'flex-end' : 'center',
+            }}>
+              <div className="inline-flex" style={{ 
+                  alignItems: key === 'address' ? 'flex-start' : 'center',
+                  backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
+                  padding: key === 'class' ? `0 ${8 * scale}px` : '0',
+                  borderRadius: key === 'class' ? '8px' : '0',
+              }}>
+                <div className="w-1/2 text-right pr-2 font-bold" style={{ fontSize: `${elementLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
+                  {fieldLabels[key as keyof typeof fieldLabels]}
+                </div>
+                <div className="w-1/2 text-left pl-2" style={{ fontSize: `${elementLayout.valueFontSize * scale}px` }}>
+                  {value}
+                </div>
+              </div>
+          </div>
+        );
     } else if (key === 'name') {
       content = (
-        <div className="flex items-center" style={{ 
+        <div className="flex items-center w-full h-full" style={{ 
             ...headlineStyle,
-            width: '100%',
-            height: '100%',
             justifyContent: elementLayout.textAlign === 'left' ? 'flex-start' : elementLayout.textAlign === 'right' ? 'flex-end' : 'center',
             fontSize: `${elementLayout.valueFontSize * scale}px`,
             color: elementLayout.textColor,
@@ -145,7 +115,6 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
         </div>
       );
     } else if (key === 'username') {
-      const bodyStyle = { fontFamily: "'PT Sans', sans-serif" };
       content = (
         <div className="text-black w-full h-full flex items-center justify-center" style={{ ...bodyStyle, fontSize: `${elementLayout.valueFontSize * scale}px` }}>
           {data?.username || '{username}'}
@@ -185,12 +154,11 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, de
       );
     }
 
-    // Should not be reached for movable elements
     return null;
   };
 
   const positionableElements = Object.entries(layout).filter(([key]) =>
-    positionableElementKeys.includes(key)
+    positionableElementKeys.includes(key as any)
   );
 
   return (
