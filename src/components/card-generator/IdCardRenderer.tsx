@@ -35,14 +35,11 @@ const fieldLabels: Partial<Record<LayoutKey | BackLayoutKey, string>> = {
   address: 'Address:',
 };
 
-const positionableElementKeys: (LayoutKey|BackLayoutKey)[] = [
-  'studentPhoto', 'name', 'class', 'rollNo', 'section', 'dob', 'fatherName', 'motherName', 'admissionNo', 'contact', 'address', 'fatherPhoto', 'motherPhoto', 'qrCode', 'username'
-];
 const detailKeys: (LayoutKey)[] = ['class', 'rollNo', 'section', 'dob', 'fatherName', 'motherName', 'admissionNo', 'contact', 'address'];
 
 
 const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
-  ({ cardType, bg, layout, data }, ref) => {
+  ({ cardType, bg, layout, data, detailFieldsOrder }, ref) => {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   useEffect(() => {
@@ -62,9 +59,29 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
   const headlineStyle: React.CSSProperties = { fontFamily: "'Poppins', sans-serif" };
   const bodyStyle: React.CSSProperties = { fontFamily: "'PT Sans', sans-serif" };
 
-  const filteredLayout = Object.fromEntries(
-    Object.entries(layout).filter(([key]) => positionableElementKeys.includes(key as any))
-  );
+  const getOrderedLayout = (layout: CardLayout) => {
+    if (!detailFieldsOrder) return Object.entries(layout);
+    
+    const orderedDetailFields = detailFieldsOrder.map(key => [key, layout[key]]);
+    const otherFields = Object.entries(layout).filter(([key]) => !detailFieldsOrder.includes(key as any));
+    
+    // Ensure studentPhoto and name are rendered first, then the ordered details
+    const photo = otherFields.find(([key]) => key === 'studentPhoto');
+    const name = otherFields.find(([key]) => key === 'name');
+    const theRest = otherFields.filter(([key]) => key !== 'studentPhoto' && key !== 'name');
+
+    const finalOrder = [];
+    if (photo) finalOrder.push(photo);
+    if (name) finalOrder.push(name);
+    finalOrder.push(...orderedDetailFields);
+    finalOrder.push(...theRest);
+    
+    return finalOrder;
+  };
+  
+  const elementsToRender = cardType === 'front'
+    ? getOrderedLayout(layout as CardLayout)
+    : Object.entries(layout);
 
   return (
     <div
@@ -83,7 +100,7 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
             backgroundSize: '100% 100%',
             position: 'relative',
         }}>
-        {Object.entries(filteredLayout).map(([key, elementLayout]: [string, any]) => {
+        {elementsToRender.map(([key, elementLayout]: [string, any]) => {
             if(!elementLayout.visible) return null;
 
             const baseStyle: React.CSSProperties = {
@@ -102,19 +119,20 @@ const IdCardRenderer = forwardRef<HTMLDivElement, IdCardRendererProps>(
 
             if (detailKeys.includes(key as LayoutKey)) {
               const value = data[key as keyof CardData] || `{${key}}`;
+              const label = fieldLabels[key as keyof typeof fieldLabels];
               baseStyle.justifyContent = elementLayout.textAlign;
               
               content = (
                 <div style={{
                     ...bodyStyle,
                     display: 'inline-flex',
-                    alignItems: key === 'address' ? 'flex-start' : 'center',
+                    alignItems: key === 'address' ? 'flex-start' : 'baseline',
                     backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
                     padding: key === 'class' ? `0 8px` : '0',
                     borderRadius: key === 'class' ? '12px' : '0',
                 }}>
-                    <div style={{ fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap', fontWeight: 'bold', paddingRight: '0.5rem' }}>
-                        {fieldLabels[key as keyof typeof fieldLabels]}
+                    <div style={{ fontSize: `${elementLayout.labelFontSize}px`, whiteSpace: 'nowrap', fontWeight: 'bold', paddingRight: '0.5em' }}>
+                        {label}
                     </div>
                     <div style={{ fontSize: `${elementLayout.valueFontSize}px` }}>
                         {value}

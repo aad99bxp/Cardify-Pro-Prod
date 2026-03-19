@@ -73,7 +73,11 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
         const heightChange = direction.includes('top') ? -dy : dy;
         
         let newSize;
-        if (Math.abs(widthChange) > Math.abs(heightChange)) {
+        if (moveEvent.shiftKey) { // Free resize with shift
+            newWidth = startLayout.width + widthChange;
+            newHeight = startLayout.height + heightChange;
+        }
+        else if (Math.abs(widthChange) > Math.abs(heightChange)) {
           newSize = startLayout.width + widthChange;
           newWidth = newSize;
           newHeight = newSize / originalAspectRatio;
@@ -99,11 +103,11 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
       const minSize = 20;
       if (newWidth < minSize) {
         newWidth = minSize;
-        if (isCorner) newHeight = newWidth / originalAspectRatio;
+        if (isCorner && !moveEvent.shiftKey) newHeight = newWidth / originalAspectRatio;
       }
       if (newHeight < minSize) {
         newHeight = minSize;
-        if (isCorner) newWidth = newHeight * originalAspectRatio;
+        if (isCorner && !moveEvent.shiftKey) newWidth = newHeight * originalAspectRatio;
       }
 
       // After potential clamping, recalculate position for top/left drags
@@ -163,7 +167,7 @@ export function EditableElement({ children, id, layout, onUpdate, scale, contain
       )}
       onMouseDown={handleDragStart}
     >
-      <div className="w-full h-full relative overflow-hidden">
+      <div className="w-full h-full relative">
         {children}
       </div>
       {handles.map(handle => (

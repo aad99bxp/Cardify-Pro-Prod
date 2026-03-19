@@ -40,7 +40,7 @@ const positionableElementKeys: (LayoutKey | BackLayoutKey)[] = [
 const detailKeys: (LayoutKey)[] = ['class', 'rollNo', 'section', 'dob', 'fatherName', 'motherName', 'admissionNo', 'contact', 'address'];
 
 
-export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: CardPreviewProps) {
+export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType, detailFieldsOrder }: CardPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
@@ -76,21 +76,22 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
 
     if (detailKeys.includes(key as LayoutKey)) {
         const value = data?.[key as keyof CardData] || `{${key}}`;
+        const label = fieldLabels[key as keyof typeof fieldLabels];
         content = (
-          <div className="flex w-full h-full" style={{
+          <div className="w-full h-full flex" style={{
               ...bodyStyle,
               alignItems: 'center',
               justifyContent: elementLayout.textAlign
           }}>
             <div style={{
                 display: 'inline-flex',
-                alignItems: key === 'address' ? 'flex-start' : 'center',
+                alignItems: key === 'address' ? 'flex-start' : 'baseline',
                 backgroundColor: key === 'class' ? (elementLayout as any).highlightColor : 'transparent',
                 padding: key === 'class' ? `0 ${8 * scale}px` : '0',
                 borderRadius: key === 'class' ? '8px' : '0',
             }}>
-              <div className="font-bold pr-2" style={{ fontSize: `${elementLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap' }}>
-                {fieldLabels[key as keyof typeof fieldLabels]}
+              <div className="font-bold" style={{ fontSize: `${elementLayout.labelFontSize * scale}px`, whiteSpace: 'nowrap', paddingRight: '0.5em' }}>
+                {label}
               </div>
               <div style={{ fontSize: `${elementLayout.valueFontSize * scale}px` }}>
                 {value}
@@ -160,9 +161,18 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
     return null;
   };
 
-  const positionableElements = Object.entries(layout).filter(([key]) =>
-    positionableElementKeys.includes(key as any)
-  );
+  const getOrderedLayout = (layout: CardLayout) => {
+    if (!detailFieldsOrder) return Object.entries(layout);
+    
+    const orderedDetailFields = detailFieldsOrder.map(key => [key, layout[key]]);
+    const otherFields = Object.entries(layout).filter(([key]) => !detailFieldsOrder.includes(key as any));
+    
+    return [...otherFields, ...orderedDetailFields];
+  };
+
+  const elementsToRender = cardType === 'front' 
+    ? getOrderedLayout(layout as CardLayout)
+    : Object.entries(layout);
 
   return (
     <Card className="w-full max-w-[calc(100vw-4rem)] md:max-w-md lg:max-w-lg shadow-lg">
@@ -178,7 +188,7 @@ export function CardPreview({ id, bg, layout, onLayoutChange, data, cardType }: 
           }}
         >
           {bg ? (
-            positionableElements.map(([key, elementLayout]) => renderElement(key as LayoutKey | BackLayoutKey, elementLayout))
+            elementsToRender.map(([key, elementLayout]) => renderElement(key as LayoutKey | BackLayoutKey, elementLayout))
           ) : (
             <div className="w-full h-full flex items-center justify-center flex-col text-muted-foreground">
               <ImageIcon className="w-16 h-16" />
